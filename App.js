@@ -1,9 +1,11 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View, Image } from "react-native";
+import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 export default function App() {
   return (
     <View style={styles.container}>
+      <ActivityIndicator animating={true} size={"large"} />
       <Text style={styles.text}>Thats cool</Text>
       <Text>New Text</Text>
       <Image
