@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, FlatList, Button } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 export default function App() {
@@ -20,13 +20,25 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [movies, setMovies] = useState([]);
+  const [title, setTitle] = useState(true);
+  const [counter, setCounter] = useState(2);
 
   useEffect(() => {
     getMoviesFromApiAsync();
   }, []);
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Movies</Text>
+      <Button
+        title={`Counter: ${counter}`}
+        onPress={() => setCounter(counter * counter)}
+      />
+      <Button
+        title={title ? "I am a button" : "I am siri"}
+        onPress={() => {
+          setTitle(!title);
+        }}
+      ></Button>
+      <Text style={styles.text}>Siri hate Movies</Text>
       {loading ? (
         <ActivityIndicator animating={true} size={"medium"} />
       ) : (
@@ -45,12 +57,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#ccc",
     alignItems: "center",
     justifyContent: "center",
   },
   text: {
-    color: "#876a7ef",
+    color: "tomato",
     fontFamily: "Arial",
     textTransform: "Capitalize",
   },
