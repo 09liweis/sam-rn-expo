@@ -1,6 +1,14 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, Image, FlatList, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  Button,
+  SafeAreaView,
+} from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 export default function App() {
@@ -8,7 +16,7 @@ export default function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies?limit=100",
+        "https://samliweisen.onrender.com/api/movies?limit=50",
       );
       const json = await response.json();
       setMovies(json.movies);
@@ -20,46 +28,50 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [movies, setMovies] = useState([]);
-  const [title, setTitle] = useState(true);
-  const [counter, setCounter] = useState(2);
 
   useEffect(() => {
     getMoviesFromApiAsync();
   }, []);
   return (
     <View style={styles.container}>
-      <Button
-        title={`Counter: ${counter}`}
-        onPress={() => setCounter(counter * counter)}
-      />
-      <Button
-        title={title ? "I am a button" : "I am siri"}
-        onPress={() => {
-          setTitle(!title);
-        }}
-      ></Button>
       <Text style={styles.text}>Siri hate Movies</Text>
       {loading ? (
         <ActivityIndicator animating={true} size={"medium"} />
       ) : (
-        <Text>{movies.length}</Text>
+        <SafeAreaView style={styles.listArea}>
+          <FlatList
+            data={movies}
+            renderItem={({ item }) => (
+              <View style={styles.movieCard}>
+                <Image source={{ uri: item.poster }} style={styles.image} />
+                <Text>{item.title}</Text>
+              </View>
+            )}
+            keyExtractor={(item) => item._id}
+          />
+        </SafeAreaView>
       )}
-      <Image
-        source={{
-          uri: "https://m.media-amazon.com/images/M/MV5BMTY3Nzg2NjA1OF5BMl5BanBnXkFtZTgwMjY5NTU1MzI@._V1_FMjpg_UX309_.jpg",
-        }}
-        style={styles.image}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    padding: 10,
     flex: 1,
-    backgroundColor: "#ccc",
+    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  listArea: {
+    flex: 1,
+    marginTop: StatusBar.currentHeight || 0,
+  },
+  movieCard: {
+    borderRadius: "30",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    marginBottom: 10,
   },
   text: {
     color: "tomato",
