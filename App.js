@@ -11,6 +11,15 @@ import {
 } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
+function MovieCard({ movie }) {
+  return (
+    <View style={styles.movieCard}>
+      <Image source={{ uri: movie.poster }} style={styles.movieImage} />
+      <Text>{movie.title}</Text>
+    </View>
+  );
+}
+
 export default function App() {
   const getMoviesFromApiAsync = async () => {
     setLoading(true);
@@ -41,15 +50,7 @@ export default function App() {
         <SafeAreaView style={styles.listArea}>
           <FlatList
             data={movies}
-            renderItem={({ item }) => (
-              <View style={styles.movieCard}>
-                <Image
-                  source={{ uri: item.poster }}
-                  style={styles.movieImage}
-                />
-                <Text>{item.title}</Text>
-              </View>
-            )}
+            renderItem={({ item }) => <MovieCard movie={item} />}
             keyExtractor={(item) => item._id}
           />
         </SafeAreaView>
