@@ -16,7 +16,7 @@ export default function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies?limit=50",
+        "https://samliweisen.onrender.com/api/movies/imdb_boxoffice?limit=50",
       );
       const json = await response.json();
       setMovies(json.movies);
@@ -43,7 +43,10 @@ export default function App() {
             data={movies}
             renderItem={({ item }) => (
               <View style={styles.movieCard}>
-                <Image source={{ uri: item.poster }} style={styles.image} />
+                <Image
+                  source={{ uri: item.poster }}
+                  style={styles.movieImage}
+                />
                 <Text>{item.title}</Text>
               </View>
             )}
@@ -60,14 +63,16 @@ const styles = StyleSheet.create({
     padding: 10,
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
   listArea: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
   },
   movieCard: {
+    width: "100%",
+    flexDirection: "row",
     borderRadius: "30",
     borderWidth: 1,
     borderColor: "#ccc",
@@ -78,8 +83,8 @@ const styles = StyleSheet.create({
     fontFamily: "Arial",
     textTransform: "Capitalize",
   },
-  image: {
-    width: 75,
-    height: 100,
+  movieImage: {
+    width: "35%",
+    aspectRatio: "3/4",
   },
 });
