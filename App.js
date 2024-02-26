@@ -10,40 +10,40 @@ import {
   SafeAreaView,
 } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-
-function MovieCard({ movie }) {
-  return (
-    <View style={styles.movieCard}>
-      <Image source={{ uri: movie.poster }} style={styles.movieImage} />
-      <Text>{movie.title}</Text>
-    </View>
-  );
-}
+import MovieCard from "./components/MovieCard";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies/imdb_boxoffice?limit=50",
+        "https://samliweisen.onrender.com/api/movies",
+        {
+          headers: {
+            "Content-type": "application/json",
+          },
+        },
       );
       const json = await response.json();
       setMovies(json.movies);
     } catch (error) {
       console.error(error);
+      setTitle(error.toString());
     }
     setLoading(false);
   };
 
   const [loading, setLoading] = useState(false);
   const [movies, setMovies] = useState([]);
+  const [title, setTitle] = useState("Siri will like Movies");
 
   useEffect(() => {
     getMoviesFromApiAsync();
   }, []);
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Siri hate Movies</Text>
+      <StatusBar />
+      <Text style={styles.text}>{title}</Text>
       {loading ? (
         <ActivityIndicator animating={true} size={"medium"} />
       ) : (
@@ -71,21 +71,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
   },
-  movieCard: {
-    width: "100%",
-    flexDirection: "row",
-    borderRadius: "30",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    marginBottom: 10,
-  },
   text: {
     color: "tomato",
     fontFamily: "Arial",
     textTransform: "Capitalize",
-  },
-  movieImage: {
-    width: "35%",
-    aspectRatio: "3/4",
   },
 });
