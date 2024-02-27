@@ -6,6 +6,7 @@ export default function MovieCard({ movie }) {
       <Image source={{ uri: movie.poster }} style={styles.movieImage} />
       <View style={styles.movieInfo}>
         <Text style={styles.movieTitle}>{movie.title}</Text>
+        <Text style={styles.doubanRating}>{movie.douban_rating}</Text>
       </View>
     </View>
   );
@@ -13,7 +14,6 @@ export default function MovieCard({ movie }) {
 
 const styles = StyleSheet.create({
   movieCard: {
-    padding: 10,
     width: "100%",
     flexDirection: "row",
     borderRadius: 10,
@@ -27,10 +27,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   movieInfo: {
-    width: "75%",
+    position: "relative",
+    width: "65%",
     padding: 15,
   },
   movieTitle: {
     fontSize: 18,
+  },
+  doubanRating: {
+    top: 0,
+    right: 0,
+    position: "absolute",
+    color: "#fff",
+    padding: 5,
+    backgroundColor: "green",
   },
 });
