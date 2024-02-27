@@ -13,6 +13,7 @@ export default function MovieCard({ movie }) {
 
 const styles = StyleSheet.create({
   movieCard: {
+    padding: 10,
     width: "100%",
     flexDirection: "row",
     borderRadius: 10,
@@ -26,7 +27,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   movieInfo: {
-    padding: 20,
+    width: "75%",
+    padding: 15,
   },
   movieTitle: {
     fontSize: 18,
