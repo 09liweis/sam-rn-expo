@@ -11,25 +11,17 @@ import {
 } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import MovieCard from "./components/MovieCard";
+import { fetchData } from "./util";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
     setLoading(true);
-    try {
-      const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies",
-        {
-          headers: {
-            "Content-type": "application/json",
-          },
-        },
-      );
-      const json = await response.json();
-      setMovies(json.movies);
-    } catch (error) {
-      console.error(error);
-      setTitle(error.toString());
-    }
+    const { resp, error } = await fetchData({
+      method: "GET",
+      url: "https://samliweisen.onrender.com/api/movies",
+    });
+    setMovies(resp.movies);
+    // setTitle(error.toString());
     setLoading(false);
   };
 
