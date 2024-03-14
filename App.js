@@ -57,5 +57,9 @@ const styles = StyleSheet.create({
     color: "tomato",
     fontFamily: "Arial",
     textTransform: "Capitalize",
+    fontSize: 24,
+    textAlign: "center",
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
