@@ -1,6 +1,6 @@
 {
   "name": "sam-rn-expo",
-  "version": "2.6.0",
+  "version": "3.6.0",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",

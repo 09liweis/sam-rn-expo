@@ -1,27 +1,27 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  FlatList,
-  Button,
-  SafeAreaView,
-} from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-import MovieCard from "./components/MovieCard";
-import { fetchData } from "./util";
+import MovieList from "./components/MovieList";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
     setLoading(true);
-    const { resp, error } = await fetchData({
-      method: "GET",
-      url: "https://samliweisen.onrender.com/api/movies",
-    });
-    setMovies(resp.movies);
-    // setTitle(error.toString());
+    try {
+      const response = await fetch(
+        "https://samliweisen.onrender.com/api/movies?imgserver=img9&limit=50",
+        {
+          headers: {
+            "Content-type": "application/json",
+          },
+        },
+      );
+      const json = await response.json();
+      setMovies(json.movies);
+    } catch (error) {
+      console.error(error);
+      setTitle(error.toString());
+    }
     setLoading(false);
   };
 
@@ -39,13 +39,7 @@ export default function App() {
       {loading ? (
         <ActivityIndicator animating={true} size={"medium"} />
       ) : (
-        <SafeAreaView style={styles.listArea}>
-          <FlatList
-            data={movies}
-            renderItem={({ item }) => <MovieCard movie={item} />}
-            keyExtractor={(item) => item._id}
-          />
-        </SafeAreaView>
+        <MovieList movies={movies} />
       )}
     </View>
   );
@@ -58,10 +52,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     // alignItems: 'center',
     // justifyContent: 'center',
-  },
-  listArea: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
   },
   text: {
     color: "tomato",
