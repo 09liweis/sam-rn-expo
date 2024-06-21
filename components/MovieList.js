@@ -8,7 +8,7 @@ export default function MovieList({ movies }) {
       <FlatList
         data={movies}
         renderItem={({ item }) => <MovieCard movie={item} />}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => item.title}
       />
     </SafeAreaView>
   );

@@ -9,7 +9,7 @@ export default function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies?imgserver=img9&limit=50",
+        "https://samliweisen.onrender.com/api/movies/imdb/box_office?imgserver=img9&limit=50",
         {
           headers: {
             "Content-type": "application/json",
@@ -47,11 +47,13 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    margin: "auto",
+    maxWidth: "425px",
     padding: 10,
     flex: 1,
     backgroundColor: "#fff",
-    // alignItems: 'center',
-    // justifyContent: 'center',
+    // alignItems: "center",
+    // justifyContent: "center",
   },
   text: {
     color: "tomato",
