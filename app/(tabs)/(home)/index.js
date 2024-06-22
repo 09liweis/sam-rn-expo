@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-import MovieList from "../components/MovieList";
+import MovieList from "../../../components/MovieList";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
