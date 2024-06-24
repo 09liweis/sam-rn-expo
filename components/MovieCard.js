@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   doubanRating: {
     top: 0,
     right: 0,
+    borderTopRightRadius: 10,
     position: "absolute",
     color: "#fff",
     padding: 5,
