@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaView, StyleSheet, FlatList } from "react-native";
-import MovieCard from "./MovieCard";
+import MovieCard from "components/MovieCard";
 
 export default function MovieList({ movies }) {
   return (
