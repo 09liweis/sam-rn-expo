@@ -1,5 +1,30 @@
 import { Stack } from "expo-router";
-
-export default function TabLayout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen
+        name="index"
+        options={{
+          // Hide the header for all other routes.
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="form"
+        options={
+          {
+            // Hide the header for all other routes.
+            // headerShown: false,
+          }
+        }
+      />
+      {/* <Stack.Screen
+        name="modal"
+        options={{
+          // Set the presentation mode to modal for our modal route.
+          presentation: "modal",
+        }}
+      /> */}
+    </Stack>
+  );
 }
