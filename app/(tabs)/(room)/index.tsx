@@ -1,5 +1,6 @@
+import { router } from "expo-router";
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button } from "react-native";
 
 const RoomList = () => {
   const rooms = [
@@ -37,12 +38,15 @@ const RoomList = () => {
   );
 
   return (
-    <FlatList
-      data={rooms}
-      renderItem={renderRoom}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.list}
-    />
+    <>
+      <FlatList
+        data={rooms}
+        renderItem={renderRoom}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.list}
+      />
+      <Button onPress={() => router.push("(room)/form")} title="Add Room" />
+    </>
   );
 };
 

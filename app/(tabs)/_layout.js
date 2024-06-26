@@ -1,9 +1,27 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
+import { Button } from "react-native";
 
 export default function TabLayout() {
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+      <Tabs.Screen
+        name="(room)"
+        options={{
+          // headerRight: () => (
+          //   <Button
+          //     onPress={() => router.push("(room)/form")}
+          //     title="Add Room"
+          //   />
+          // ),
+          headerShown: false,
+          title: "Rooms",
+          tabBarLabel: "Rooms",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="home" color={color} />
+          ),
+        }}
+      />
       <Tabs.Screen
         name="(home)"
         options={{
@@ -22,17 +40,6 @@ export default function TabLayout() {
           title: "Settings",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="cog" color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="(room)"
-        options={{
-          headerShown: false,
-          title: "Rooms",
-          tabBarLabel: "Rooms",
-          tabBarIcon: ({ color }) => (
-            <FontAwesome size={28} name="home" color={color} />
           ),
         }}
       />
