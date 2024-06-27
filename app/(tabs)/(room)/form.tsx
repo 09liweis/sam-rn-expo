@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { router } from "expo-router";
 
 const RoomRentalForm = () => {
   const [roomName, setRoomName] = useState("");
@@ -23,7 +24,7 @@ const RoomRentalForm = () => {
       rentalAmount,
     };
     // Handle form submission (e.g., send data to server)
-    console.log(formData);
+    router.dismiss();
   };
 
   return (

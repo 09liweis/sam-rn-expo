@@ -11,12 +11,11 @@ export default function Layout() {
       />
       <Stack.Screen
         name="form"
-        options={
-          {
-            // Hide the header for all other routes.
-            // headerShown: false,
-          }
-        }
+        options={{
+          // Hide the header for all other routes.
+          // headerShown: false,
+          title: "Add a new room",
+        }}
       />
       {/* <Stack.Screen
         name="modal"
