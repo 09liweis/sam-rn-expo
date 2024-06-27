@@ -51,7 +51,6 @@ const styles = StyleSheet.create({
     maxWidth: "425px",
     padding: 10,
     flex: 1,
-    backgroundColor: "#fff",
     // alignItems: "center",
     // justifyContent: "center",
   },

@@ -8,7 +8,7 @@ export default function MovieCard({ movie }) {
       onPress={() =>
         router.push({
           pathname: "movieDetail",
-          params: { id: douban_id, title },
+          params: { douban_id: douban_id, title },
         })
       }
     >
