@@ -4,7 +4,7 @@ import { Button } from "react-native";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
+    <Tabs screenOptions={{ tabBarActiveTintColor: "red" }}>
       <Tabs.Screen
         name="(room)"
         options={{
@@ -23,11 +23,11 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="(home)"
+        name="(movies)"
         options={{
           headerShown: false,
-          title: "Home",
-          tabBarLabel: "Home",
+          title: "Movies",
+          tabBarLabel: "Movies",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="film" color={color} />
           ),
