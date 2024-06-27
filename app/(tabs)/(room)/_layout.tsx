@@ -10,7 +10,7 @@ export default function Layout() {
         }}
       />
       <Stack.Screen
-        name="form"
+        name="roomForm"
         options={{
           // Hide the header for all other routes.
           // headerShown: false,

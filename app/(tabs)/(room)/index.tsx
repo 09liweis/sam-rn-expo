@@ -45,7 +45,7 @@ const RoomList = () => {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
       />
-      <Button onPress={() => router.push("(room)/form")} title="Add Room" />
+      <Button onPress={() => router.push("(room)/roomForm")} title="Add Room" />
     </>
   );
 };
