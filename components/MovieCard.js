@@ -1,14 +1,25 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import { router } from "expo-router";
+import { Text, View, StyleSheet, Image, Pressable } from "react-native";
 
 export default function MovieCard({ movie }) {
+  const { douban_id, title } = movie;
   return (
-    <View style={styles.movieCard}>
-      <Image source={{ uri: movie.poster }} style={styles.movieImage} />
-      <View style={styles.movieInfo}>
-        <Text style={styles.movieTitle}>{movie.title}</Text>
-        <Text style={styles.doubanRating}>{movie.douban_rating}</Text>
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "movieDetail",
+          params: { id: douban_id, title },
+        })
+      }
+    >
+      <View style={styles.movieCard}>
+        <Image source={{ uri: movie.poster }} style={styles.movieImage} />
+        <View style={styles.movieInfo}>
+          <Text style={styles.movieTitle}>{movie.title}</Text>
+          <Text style={styles.doubanRating}>{movie.douban_rating}</Text>
+        </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
