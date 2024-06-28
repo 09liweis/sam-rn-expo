@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "tomato",
-    fontFamily: "Arial",
     textTransform: "Capitalize",
     fontSize: 24,
     textAlign: "center",
