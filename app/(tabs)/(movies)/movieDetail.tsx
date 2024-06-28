@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
+type Movie = {
+  title:string
+}
+
 export default function MovieDetail() {
   const { title, douban_id } = useLocalSearchParams();
-  const [movie, setMovie] = useState({});
+  const [movie, setMovie] = useState<Movie>();
   const [loading, setLoading] = useState(false);
 
   const fetchDetail = async () => {
@@ -35,9 +39,11 @@ export default function MovieDetail() {
         }}
       />
       {loading ? (
-        <ActivityIndicator animating={true} size={"medium"} />
+        <ActivityIndicator animating={true} size={"large"} />
       ) : (
-        <View>{movie.title}</View>
+        <View>
+          <Text>{movie?.title}</Text>
+        </View>
       )}
     </View>
   );
