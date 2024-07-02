@@ -9,7 +9,7 @@ export default function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies?imgserver=img9&limit=50",
+        "https://samliweisen.vercel.app/api/movies?imgserver=img9&limit=50",
         {
           headers: {
             "Content-type": "application/json",
