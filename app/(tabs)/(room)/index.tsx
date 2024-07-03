@@ -22,9 +22,9 @@ const RoomList = () => {
   }, []);
 
   const renderRoom = ({ item }: any) => (
-    <View style={styles.card}>
+    <Link href={`(room)/roomForm?id=${item._id}`} style={styles.card}>
       <Text style={styles.roomName}>{item.nm}</Text>
-    </View>
+    </Link>
   );
 
   return (
