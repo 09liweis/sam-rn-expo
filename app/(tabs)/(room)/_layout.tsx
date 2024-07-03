@@ -17,6 +17,14 @@ export default function Layout() {
           title: "Add a new room",
         }}
       />
+      <Stack.Screen
+        name="renteeForm"
+        options={{
+          // Hide the header for all other routes.
+          // headerShown: false,
+          title: "Add a new rentee",
+        }}
+      />
       {/* <Stack.Screen
         name="modal"
         options={{

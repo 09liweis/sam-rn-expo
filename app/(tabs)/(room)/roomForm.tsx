@@ -1,16 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router } from "expo-router";
+import { Link, router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "utils";
 import { ROOM_API } from "src/constant/api";
 
 const RoomRentalForm = () => {
+  const { id } = useLocalSearchParams<{ id?: string }>();
   const [roomName, setRoomName] = useState("");
   const [startDate, setStartDate] = useState(new Date());
-  const [depositAmount, setDepositAmount] = useState("");
-  const [rentalAmount, setRentalAmount] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
+
+  useEffect(() => {
+    if (id) {
+      fetchData({
+        url: `${ROOM_API}/${id}`,
+      }).then((response) => {
+        setRoomName(response.nm);
+      });
+    }
+  }, []);
 
   const handleDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || startDate;
@@ -20,8 +29,8 @@ const RoomRentalForm = () => {
 
   const submitRoom = async (roomData: any) => {
     const response = await fetchData({
-      url: ROOM_API,
-      method: "POST",
+      url: `${ROOM_API}${id ? "/" + id : ""}`,
+      method: id ? "PUT" : "POST",
       body: roomData,
     });
     return response;
@@ -45,38 +54,8 @@ const RoomRentalForm = () => {
         onChangeText={setRoomName}
       />
 
-      <Text style={styles.label}>Start Date</Text>
-      <Button
-        title="Select Start Date"
-        onPress={() => setShowDatePicker(true)}
-      />
-      {showDatePicker && (
-        <DateTimePicker
-          value={startDate}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-        />
-      )}
-      <Text>{startDate.toDateString()}</Text>
-
-      <Text style={styles.label}>Deposit Amount</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={depositAmount}
-        onChangeText={setDepositAmount}
-      />
-
-      <Text style={styles.label}>Rental Amount</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={rentalAmount}
-        onChangeText={setRentalAmount}
-      />
-
       <Button title="Submit" onPress={handleSubmit} />
+      <Link href={`(room)/renteeForm?roomId=${id}`}>Add new rentee</Link>
     </View>
   );
 };
