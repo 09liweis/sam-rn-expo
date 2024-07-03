@@ -1,6 +1,7 @@
 import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
+import { ROOM_API } from "src/constant/api";
 import { fetchData } from "utils";
 
 type Room = {
@@ -12,9 +13,7 @@ const RoomList = () => {
   const [rooms, setRooms] = useState([]);
 
   const fetchRooms = async () => {
-    const rooms_api =
-      "https://6f5cbb78-b122-4bad-a99f-82d4ebe22052-00-2c9f2mev598t0.picard.replit.dev/api/rooms";
-    const response = await fetchData({ url: rooms_api });
+    const response = await fetchData({ url: ROOM_API });
     setRooms(response);
   };
 

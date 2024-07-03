@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
+import { fetchData } from "utils";
+import { ROOM_API } from "src/constant/api";
 
 const RoomRentalForm = () => {
   const [roomName, setRoomName] = useState("");
@@ -16,13 +18,20 @@ const RoomRentalForm = () => {
     setStartDate(currentDate);
   };
 
-  const handleSubmit = () => {
+  const submitRoom = async (roomData: any) => {
+    const response = await fetchData({
+      url: ROOM_API,
+      method: "POST",
+      body: roomData,
+    });
+    return response;
+  };
+
+  const handleSubmit = async () => {
     const formData = {
-      roomName,
-      startDate,
-      depositAmount,
-      rentalAmount,
+      nm: roomName,
     };
+    const response = await submitRoom(formData);
     // Handle form submission (e.g., send data to server)
     router.dismiss();
   };
