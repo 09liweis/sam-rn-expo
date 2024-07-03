@@ -1,39 +1,30 @@
 import { Link, router } from "expo-router";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
+import { fetchData } from "utils";
+
+type Room = {
+  _id: string;
+  nm: string;
+};
 
 const RoomList = () => {
-  const rooms = [
-    {
-      id: "1",
-      name: "Room A",
-      startDate: "2024-07-02",
-      depositAmount: "300",
-      rentalAmount: "750",
-    },
-    {
-      id: "2",
-      name: "Room B",
-      startDate: "2024-07-01",
-      depositAmount: "600",
-      rentalAmount: "600",
-    },
-    {
-      id: "3",
-      name: "Room C",
-      startDate: "2024-07-01",
-      depositAmount: "750",
-      rentalAmount: "750",
-    },
-    // Add more rooms as needed
-  ];
+  const [rooms, setRooms] = useState([]);
+
+  const fetchRooms = async () => {
+    const rooms_api =
+      "https://6f5cbb78-b122-4bad-a99f-82d4ebe22052-00-2c9f2mev598t0.picard.replit.dev/api/rooms";
+    const response = await fetchData({ url: rooms_api });
+    setRooms(response);
+  };
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
 
   const renderRoom = ({ item }: any) => (
     <View style={styles.card}>
-      <Text style={styles.roomName}>{item.name}</Text>
-      <Text>Start Date: {item.startDate}</Text>
-      <Text>Deposit Amount: ${item.depositAmount}</Text>
-      <Text>Rental Amount: ${item.rentalAmount}</Text>
+      <Text style={styles.roomName}>{item.nm}</Text>
     </View>
   );
 
@@ -42,7 +33,7 @@ const RoomList = () => {
       <FlatList
         data={rooms}
         renderItem={renderRoom}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: Room) => item._id}
         contentContainerStyle={styles.list}
       />
       <Button onPress={() => router.push("(room)/roomForm")} title="Add Room" />
