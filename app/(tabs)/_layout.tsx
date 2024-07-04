@@ -4,7 +4,10 @@ import { Button } from "react-native";
 
 export default function TabLayout() {
   return (
-    <Tabs screenOptions={{ tabBarActiveTintColor: "red" }}>
+    <Tabs
+      initialRouteName="(room)"
+      screenOptions={{ tabBarActiveTintColor: "red" }}
+    >
       <Tabs.Screen
         name="(room)"
         options={{
