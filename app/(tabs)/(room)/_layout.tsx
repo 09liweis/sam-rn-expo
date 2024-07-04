@@ -3,7 +3,7 @@ export default function Layout() {
   return (
     <Stack>
       <Stack.Screen
-        name="index"
+        name="roomList"
         options={{
           // Hide the header for all other routes.
           headerShown: false,
