@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "utils";
@@ -9,6 +16,7 @@ const RoomRentalForm = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [roomName, setRoomName] = useState("");
   const [startDate, setStartDate] = useState(new Date());
+  const [rentees, setRentees] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
@@ -17,6 +25,7 @@ const RoomRentalForm = () => {
         url: `${ROOM_API}/${id}`,
       }).then((response) => {
         setRoomName(response.nm);
+        setRentees(response.rentees);
       });
     }
   }, []);
@@ -45,6 +54,18 @@ const RoomRentalForm = () => {
     router.dismiss();
   };
 
+  const renderRentee = ({ item }: any) => (
+    <Link href={`(room)/renteeForm?rentee=${item._id}&roomId=${id}`}>
+      <View style={styles.card}>
+        <Text style={styles.roomName}>{item.nm}</Text>
+        <Text>Start Date: {item.startDate}</Text>
+        <Text>End Date: {item.endDate}</Text>
+        <Text>Deposits: {item.deposits}</Text>
+        <Text>Rent: {item.monthlyRent}</Text>
+      </View>
+    </Link>
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Room Name</Text>
@@ -55,6 +76,11 @@ const RoomRentalForm = () => {
       />
 
       <Button title="Submit" onPress={handleSubmit} />
+      <FlatList
+        data={rentees}
+        renderItem={renderRentee}
+        keyExtractor={(item) => item._id}
+      />
       <Link href={`(room)/renteeForm?roomId=${id}`}>Add new rentee</Link>
     </View>
   );
@@ -76,6 +102,28 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 16,
     borderRadius: 4,
+  },
+
+  list: {
+    padding: 20,
+  },
+  card: {
+    width: "100%",
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+    flexDirection: "column",
+  },
+  roomName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginBottom: 8,
   },
 });
 
