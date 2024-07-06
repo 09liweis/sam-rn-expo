@@ -1,12 +1,13 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { router, Tabs } from "expo-router";
 import { Button } from "react-native";
+import { primaryColor } from "src/constant/color";
 
 export default function TabLayout() {
   return (
     <Tabs
       initialRouteName="(room)"
-      screenOptions={{ tabBarActiveTintColor: "red" }}
+      screenOptions={{ tabBarActiveTintColor: primaryColor }}
     >
       <Tabs.Screen
         name="(room)"

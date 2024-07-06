@@ -2,6 +2,11 @@ import { Link, router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
 import { ROOM_API } from "src/constant/api";
+import {
+  primaryColor,
+  secondaryColor,
+  tertiaryColor,
+} from "src/constant/color";
 import { fetchData } from "utils";
 
 type Room = {
@@ -58,12 +63,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   roomName: {
+    color: primaryColor,
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
   },
   addButton: {
-    backgroundColor: "red",
+    backgroundColor: primaryColor,
     color: "#fff",
     borderRadius: 8,
     padding: 16,
