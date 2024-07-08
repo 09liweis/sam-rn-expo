@@ -55,7 +55,7 @@ const RoomRentalForm = () => {
   };
 
   const renderRentee = ({ item }: any) => (
-    <Link href={`(room)/renteeForm?rentee=${item._id}&roomId=${id}`}>
+    <Link href={`(room)/renteeForm?renteeId=${item._id}&roomId=${id}`}>
       <View style={styles.card}>
         <Text style={styles.roomName}>{item.nm}</Text>
         <Text>Start Date: {item.startDate}</Text>

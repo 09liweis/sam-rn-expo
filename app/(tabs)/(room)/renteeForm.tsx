@@ -23,6 +23,9 @@ const RoomRentalForm = () => {
         url: `${RENTEE_API}/${renteeId}`,
       }).then((response) => {
         setRoomName(response.nm);
+        setStartDate(response.startDate);
+        setDepositAmount(response.deposits);
+        setRentalAmount(response.monthlyRent);
       });
     }
   }, []);
