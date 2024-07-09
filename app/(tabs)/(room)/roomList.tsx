@@ -7,11 +7,7 @@ import {
   tertiaryColor,
 } from "src/constant/color";
 import useRentStore from "src/stores/rentStore";
-
-type Room = {
-  _id: string;
-  nm: string;
-};
+import { Room } from "src/types/roomType";
 
 const RoomList = () => {
   const { fetchRoomList, rentRoomList } = useRentStore();
