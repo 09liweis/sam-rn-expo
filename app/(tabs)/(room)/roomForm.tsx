@@ -11,6 +11,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "utils";
 import { ROOM_API } from "src/constant/api";
+import useRentStore from "src/stores/rentStore";
 
 const RoomRentalForm = () => {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -18,6 +19,7 @@ const RoomRentalForm = () => {
   const [startDate, setStartDate] = useState(new Date());
   const [rentees, setRentees] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const { fetchRoomList } = useRentStore();
 
   useEffect(() => {
     if (id) {
@@ -51,6 +53,7 @@ const RoomRentalForm = () => {
     };
     const response = await submitRoom(formData);
     // Handle form submission (e.g., send data to server)
+    fetchRoomList();
     router.dismiss();
   };
 

@@ -1,13 +1,12 @@
 import { Link, router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
-import { ROOM_API } from "src/constant/api";
 import {
   primaryColor,
   secondaryColor,
   tertiaryColor,
 } from "src/constant/color";
-import { fetchData } from "utils";
+import useRentStore from "src/stores/rentStore";
 
 type Room = {
   _id: string;
@@ -15,15 +14,10 @@ type Room = {
 };
 
 const RoomList = () => {
-  const [rooms, setRooms] = useState([]);
-
-  const fetchRooms = async () => {
-    const response = await fetchData({ url: ROOM_API });
-    setRooms(response);
-  };
+  const { fetchRoomList, rentRoomList } = useRentStore();
 
   useEffect(() => {
-    fetchRooms();
+    fetchRoomList();
   }, []);
 
   const renderRoom = ({ item }: any) => (
@@ -35,7 +29,7 @@ const RoomList = () => {
   return (
     <>
       <FlatList
-        data={rooms}
+        data={rentRoomList}
         renderItem={renderRoom}
         keyExtractor={(item: Room) => item._id}
         contentContainerStyle={styles.list}
