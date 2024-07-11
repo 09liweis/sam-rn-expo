@@ -14,21 +14,22 @@ import { ROOM_API } from "src/constant/api";
 import useRentStore from "src/stores/rentStore";
 
 const RoomRentalForm = () => {
+  const { fetchRoomList, fetchRoomDetail } = useRentStore();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const [roomName, setRoomName] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [rentees, setRentees] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const { fetchRoomList } = useRentStore();
 
+  const fetchRoom = async (id:string) => {
+    const curRoom = await fetchRoomDetail(id);
+    setRoomName(curRoom.nm);
+    setRentees(curRoom.rentees);
+  }
+  
   useEffect(() => {
     if (id) {
-      fetchData({
-        url: `${ROOM_API}/${id}`,
-      }).then((response) => {
-        setRoomName(response.nm);
-        setRentees(response.rentees);
-      });
+      fetchRoom(id);
     }
   }, []);
 

@@ -11,5 +11,9 @@ const useRentStore = create<RoomStore>()((set) => ({
       set({ rentRoomList: rooms });
     }
   },
+  fetchRoomDetail: async (roomId: string) => {
+    const room = await fetchData({ url: `${ROOM_API}/${roomId}` });
+    return room;
+  },
 }));
 export default useRentStore;

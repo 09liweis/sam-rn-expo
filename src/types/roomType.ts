@@ -1,6 +1,7 @@
 export type Room = {
   _id: string;
   nm: string;
+  rentees: [];
 };
 
 export type RoomListResponse = {
@@ -10,4 +11,6 @@ export type RoomListResponse = {
 export type RoomStore = {
   rentRoomList: Array<Room>;
   fetchRoomList: () => void;
+  curRoom?: Room;
+  fetchRoomDetail: (roomId: string) => Promise<Room>;
 };
