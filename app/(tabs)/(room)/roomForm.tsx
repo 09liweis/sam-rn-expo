@@ -15,21 +15,21 @@ import useRentStore from "src/stores/rentStore";
 
 const RoomRentalForm = () => {
   const { fetchRoomList, fetchRoomDetail } = useRentStore();
-  const { id } = useLocalSearchParams<{ id?: string }>();
+  const { roomId } = useLocalSearchParams<{ roomId?: string }>();
   const [roomName, setRoomName] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [rentees, setRentees] = useState([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const fetchRoom = async (id:string) => {
-    const curRoom = await fetchRoomDetail(id);
+  const fetchRoom = async (roomId: string) => {
+    const curRoom = await fetchRoomDetail(roomId);
     setRoomName(curRoom.nm);
     setRentees(curRoom.rentees);
-  }
-  
+  };
+
   useEffect(() => {
-    if (id) {
-      fetchRoom(id);
+    if (roomId) {
+      fetchRoom(roomId);
     }
   }, []);
 
@@ -41,8 +41,8 @@ const RoomRentalForm = () => {
 
   const submitRoom = async (roomData: any) => {
     const response = await fetchData({
-      url: `${ROOM_API}${id ? "/" + id : ""}`,
-      method: id ? "PUT" : "POST",
+      url: `${ROOM_API}${roomId ? "/" + roomId : ""}`,
+      method: roomId ? "PUT" : "POST",
       body: roomData,
     });
     return response;
@@ -59,7 +59,7 @@ const RoomRentalForm = () => {
   };
 
   const renderRentee = ({ item }: any) => (
-    <Link href={`(room)/renteeForm?renteeId=${item._id}&roomId=${id}`}>
+    <Link href={`(room)/renteeForm?renteeId=${item._id}&roomId=${roomId}`}>
       <View style={styles.card}>
         <Text style={styles.roomName}>{item.nm}</Text>
         <Text>Start Date: {item.startDate}</Text>
@@ -85,7 +85,7 @@ const RoomRentalForm = () => {
         renderItem={renderRentee}
         keyExtractor={(item) => item._id}
       />
-      <Link href={`(room)/renteeForm?roomId=${id}`}>Add new rentee</Link>
+      <Link href={`(room)/renteeForm?roomId=${roomId}`}>Add new rentee</Link>
     </View>
   );
 };
