@@ -1,6 +1,6 @@
 import { ROOM_API } from "src/constant/api";
 import { RoomListResponse, RoomStore } from "src/types/roomType";
-import { fetchData } from "utils";
+import { fetchData } from "src/utils";
 import { create } from "zustand";
 
 const useRentStore = create<RoomStore>()((set) => ({

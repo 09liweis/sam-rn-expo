@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Link, router, useLocalSearchParams } from "expo-router";
-import { fetchData } from "utils";
+import { fetchData } from "src/utils";
 import { ROOM_API } from "src/constant/api";
 import useRentStore from "src/stores/rentStore";
 

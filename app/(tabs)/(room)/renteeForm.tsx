@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
-import { fetchData } from "utils";
+import { fetchData } from "src/utils";
 import { RENTEE_API } from "src/constant/api";
 
 const RoomRentalForm = () => {
