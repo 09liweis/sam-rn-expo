@@ -1,31 +1,15 @@
+import CategoryItem from "components/expense/CategoryItem";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { fetchData } from "src/utils";
 
 const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
 
-const ICON_MAPS: { [key: string]: string } = {
-  food: "yelp",
-  gift: "gift",
-  home: "home",
-  grocery: "shopping-basket",
-  fuel: "car",
-  travel: "plane",
-  clothes: "shirtsinbulk",
-  internet: "wifi",
-  canada: "cc-visa",
-};
 
-type Expense = {
-  id:string,
-  price:string,
-  date:string,
-  category:string,
-  place:any
-}
+
+
 
 export default function App() {
   const getExpenses = async () => {
@@ -45,22 +29,8 @@ export default function App() {
   const [expenses, setExpenses] = useState([]);
   const [totals, setTotals] = useState("");
 
-  const renderExpenses = ({ item: { category, total, items } }: any) => (
-    <View key={category}>
-      <View style={styles.categoryTotal}>
-        <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
-          <FontAwesome size={28} name={ICON_MAPS[category]} />
-          <Text style={{ textTransform: "capitalize" }}>{category}</Text>
-        </View>
-        <Text>{total}</Text>
-      </View>
-      {items.map(({ id, date, price, category, place }:Expense) => (
-        <View key={id} style={styles.expenseItem}>
-          <Text>{date}</Text>
-          <Text>{price}</Text>
-        </View>
-      ))}
-    </View>
+  const renderExpenses = ({ item }: any) => (
+    <CategoryItem categoryItem={item} />
   );
 
   useEffect(() => {
@@ -83,17 +53,5 @@ const styles = StyleSheet.create({
   expensesContainer: {
     width: "100%",
   },
-  expenseItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 5,
-  },
-  categoryTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: MD2Colors.amberA200,
-    padding: 5,
-  },
+  
 });
