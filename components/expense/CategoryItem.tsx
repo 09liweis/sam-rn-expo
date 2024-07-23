@@ -1,6 +1,11 @@
 import { router } from "expo-router";
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
-import {FontAwesome6,Ionicons,AntDesign,MaterialIcons} from "@expo/vector-icons";
+import {
+  FontAwesome6,
+  Ionicons,
+  AntDesign,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 type CategoryItemProps = {
@@ -29,21 +34,33 @@ const ICON_MAPS: { [key: string]: any } = {
   canada: <FontAwesome6 name="canadian-maple-leaf" size={24} color="black" />,
 };
 
+const Price = ({ price }: { price: string }) => (
+  <Text style={{ color: "red" }}>{price}</Text>
+);
+
 export default function CategoryItem({ categoryItem }: any) {
   const { category, total, items } = categoryItem;
   return (
-    <View key={category}>
+    <View
+      style={{
+        borderWidth: 2,
+        borderRadius: 10,
+        borderColor: MD2Colors.red700,
+        marginTop: 10,
+      }}
+      key={category}
+    >
       <View style={styles.categoryTotal}>
         <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
           {ICON_MAPS[category]}
           <Text style={{ textTransform: "capitalize" }}>{category}</Text>
         </View>
-        <Text>{total}</Text>
+        <Price price={total} />
       </View>
-      {items.map(({ id, date, price, category, place }: Expense) => (
+      {items.map(({ id, date, price, place }: Expense) => (
         <View key={id} style={styles.expenseItem}>
           <Text>{date}</Text>
-          <Text>{price}</Text>
+          <Price price={price} />
         </View>
       ))}
     </View>
@@ -61,7 +78,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    backgroundColor: MD2Colors.amberA200,
     padding: 5,
+    borderBottomWidth:2,
+    borderColor:MD2Colors.red700
   },
 });
