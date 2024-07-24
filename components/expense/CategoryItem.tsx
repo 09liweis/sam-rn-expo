@@ -23,15 +23,15 @@ type Expense = {
 };
 
 const ICON_MAPS: { [key: string]: any } = {
-  food: <Ionicons name="restaurant" size={24} color="black" />,
-  gift: <AntDesign name="gift" size={24} color="black" />,
+  food: <Ionicons name="restaurant" size={24} color="green" />,
+  gift: <AntDesign name="gift" size={24} color="#989884" />,
   home: <AntDesign name="home" size={24} color="black" />,
-  grocery: <MaterialIcons name="local-grocery-store" size={24} color="black" />,
-  fuel: <MaterialIcons name="local-gas-station" size={24} color="black" />,
-  travel: <MaterialIcons name="card-travel" size={24} color="black" />,
-  clothes: <Ionicons name="shirt" size={24} color="black" />,
-  internet: <AntDesign name="wifi" size={24} color="black" />,
-  canada: <FontAwesome6 name="canadian-maple-leaf" size={24} color="black" />,
+  grocery: <MaterialIcons name="local-grocery-store" size={24} color="blue" />,
+  fuel: <MaterialIcons name="local-gas-station" size={24} color="gray" />,
+  travel: <MaterialIcons name="card-travel" size={24} color="orange" />,
+  clothes: <Ionicons name="shirt" size={24} color="pink" />,
+  internet: <AntDesign name="wifi" size={24} color="purple" />,
+  canada: <FontAwesome6 name="canadian-maple-leaf" size={24} color="red" />,
 };
 
 const Price = ({ price }: { price: string }) => (
