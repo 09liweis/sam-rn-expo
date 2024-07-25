@@ -1,4 +1,5 @@
 import CategoryItem from "components/expense/CategoryItem";
+import { Chart } from "components/expense/Chart";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, StyleSheet, Text, View } from "react-native";
@@ -39,6 +40,7 @@ export default function App() {
         <Text>Total Expenses</Text>
         <Text style={{ color: "red", fontWeight: "bold" }}>{totals}</Text>
       </View>
+      <Chart totals={totals} expenses={expenses} />
       <FlatList data={expenses} renderItem={renderExpenses} />
     </View>
   );
