@@ -3,10 +3,16 @@ import { PieChart, BarChart } from "react-native-gifted-charts";
 export const Chart = ({ totals, expenses }) => {
   const data = expenses.map((categoryPrice) => {
     const priceValue = parseFloat(categoryPrice.total.replace("$", ""));
-    const categoryPrecentage = (priceValue * 100 / parseFloat(totals.replace("$", ""))).toFixed()+"%";
+    const categoryPrecentage =
+      ((priceValue * 100) / parseFloat(totals.replace("$", ""))).toFixed() +
+      "%";
     return {
-      label: categoryPrice.category,
       value: priceValue,
+      labelComponent: () => (
+        <Text style={{ textAlign: "center", textTransform: "capitalize" }}>
+          {categoryPrice.category}
+        </Text>
+      ),
       topLabelComponent: () => (
         <Text style={{ fontSize: 18, marginBottom: 6 }}>
           {categoryPrecentage}
