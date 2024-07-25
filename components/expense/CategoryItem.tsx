@@ -7,22 +7,7 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-
-type CategoryItemProps = {
-  categoryItem: {
-    category: string;
-    total: string;
-    items: Expense[];
-  };
-};
-
-type Expense = {
-  id: string;
-  price: string;
-  date: string;
-  category: string;
-  place: any;
-};
+import { CategoryItemProps, Expense } from "src/types/expenseType";
 
 const ICON_MAPS: { [key: string]: any } = {
   food: <Ionicons name="restaurant" size={24} color="green" />,
