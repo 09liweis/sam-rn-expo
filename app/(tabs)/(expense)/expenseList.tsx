@@ -7,10 +7,6 @@ import { fetchData } from "src/utils";
 
 const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
 
-
-
-
-
 export default function App() {
   const getExpenses = async () => {
     setLoading(true);
@@ -39,7 +35,10 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar />
-      <Text>Total Expenses {totals}</Text>
+      <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
+        <Text>Total Expenses</Text>
+        <Text style={{ color: "red", fontWeight: "bold" }}>{totals}</Text>
+      </View>
       <FlatList data={expenses} renderItem={renderExpenses} />
     </View>
   );
@@ -53,5 +52,4 @@ const styles = StyleSheet.create({
   expensesContainer: {
     width: "100%",
   },
-  
 });
