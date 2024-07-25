@@ -9,9 +9,11 @@ import {
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 type CategoryItemProps = {
-  category: string;
-  total: string;
-  items: any[];
+  categoryItem: {
+    category: string;
+    total: string;
+    items: Expense[];
+  };
 };
 
 type Expense = {
@@ -35,10 +37,10 @@ const ICON_MAPS: { [key: string]: any } = {
 };
 
 const Price = ({ price }: { price: string }) => (
-  <Text style={{ color: "red" }}>{price}</Text>
+  <Text style={{ color: "red", fontWeight: "bold" }}>{price}</Text>
 );
 
-export default function CategoryItem({ categoryItem }: any) {
+export default function CategoryItem({ categoryItem }: CategoryItemProps) {
   const { category, total, items } = categoryItem;
   return (
     <View
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     padding: 5,
-    borderBottomWidth:2,
-    borderColor:MD2Colors.red700
+    borderBottomWidth: 2,
+    borderColor: MD2Colors.red700,
   },
 });
