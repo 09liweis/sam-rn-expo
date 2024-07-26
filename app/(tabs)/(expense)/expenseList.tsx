@@ -2,7 +2,7 @@ import CategoryItem from "components/expense/CategoryItem";
 import { Chart } from "components/expense/Chart";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { fetchData } from "src/utils";
 
@@ -25,6 +25,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
   const [totals, setTotals] = useState("");
+  const [view, setView] = useState("list");
 
   const renderExpenses = ({ item }: any) => (
     <CategoryItem categoryItem={item} />
@@ -40,8 +41,19 @@ export default function App() {
         <Text>Total Expenses</Text>
         <Text style={{ color: "red", fontWeight: "bold" }}>{totals}</Text>
       </View>
-      <Chart totals={totals} expenses={expenses} />
-      <FlatList data={expenses} renderItem={renderExpenses} />
+      <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
+        <Pressable onPress={() => setView("list")}>
+          <Text>View</Text>
+        </Pressable>
+        <Pressable onPress={() => setView("chart")}>
+          <Text>Chart</Text>
+        </Pressable>
+      </View>
+      {view === "list" ? (
+        <FlatList data={expenses} renderItem={renderExpenses} />
+      ) : (
+        <Chart totals={totals} expenses={expenses} />
+      )}
     </View>
   );
 }

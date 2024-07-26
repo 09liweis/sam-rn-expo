@@ -1,7 +1,7 @@
 import { Dimensions, Text, View } from "react-native";
 import { PieChart, BarChart } from "react-native-gifted-charts";
 
-const {width, height} = Dimensions.get("screen");
+const { width, height } = Dimensions.get("screen");
 
 export const Chart = ({ totals, expenses }) => {
   const data = expenses.map((categoryPrice) => {
@@ -12,7 +12,13 @@ export const Chart = ({ totals, expenses }) => {
     return {
       value: priceValue,
       labelComponent: () => (
-        <Text style={{fontSize:12, textAlign: "center", textTransform: "capitalize" }}>
+        <Text
+          style={{
+            fontSize: 12,
+            textAlign: "center",
+            textTransform: "capitalize",
+          }}
+        >
           {categoryPrice.category}
         </Text>
       ),
@@ -26,7 +32,7 @@ export const Chart = ({ totals, expenses }) => {
 
   return (
     <BarChart
-      height={height/2}
+      height={(height * 2) / 3}
       width={width}
       barWidth={30}
       noOfSections={6}
