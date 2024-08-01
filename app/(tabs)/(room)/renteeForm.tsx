@@ -5,6 +5,11 @@ import { router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "src/utils";
 import { RENTEE_API } from "src/constant/api";
 
+type RentAmount = {
+  date: string;
+  amount: string;
+};
+
 const RoomRentalForm = () => {
   const { roomId, renteeId } = useLocalSearchParams<{
     roomId?: string;
@@ -15,6 +20,7 @@ const RoomRentalForm = () => {
   const [endDate, setEndDate] = useState("");
   const [deposits, setDepositAmount] = useState("");
   const [monthlyRent, setRentalAmount] = useState("");
+
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
@@ -24,8 +30,11 @@ const RoomRentalForm = () => {
       }).then((response) => {
         setRoomName(response.nm);
         setStartDate(response.startDate);
+        setEndDate(response.endDate);
         setDepositAmount(response.deposits);
         setRentalAmount(response.monthlyRent);
+        setRentAmount(response.monthlyRent);
+        setRentAmounts(response.rentAmounts);
       });
     }
   }, []);
@@ -36,7 +45,44 @@ const RoomRentalForm = () => {
     setStartDate(currentDate);
   };
 
-  const submitRoom = async (roomData: any) => {
+  const [rentAmounts, setRentAmounts] = useState<RentAmount[]>([]);
+  const [rentMonth, setRentMonth] = useState("");
+  const [rentAmount, setRentAmount] = useState("");
+  const handleAddRentAmounts = () => {
+    setRentAmounts([...rentAmounts, { date: rentMonth, amount: rentAmount }]);
+    console.log(rentAmounts);
+    setRentMonth("");
+    setRentAmount("");
+  };
+
+  const rentAmountHTML = () => (
+    <>
+      <Text style={styles.label}>Rent Month & Amounts</Text>
+      <View style={{ flexDirection: "row", gap: 10 }}>
+        <TextInput
+          placeholder="Date"
+          style={styles.input}
+          value={rentMonth}
+          onChangeText={(text) => setRentMonth(text)}
+        />
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={rentAmount}
+          onChangeText={(text) => setRentAmount(text)}
+        />
+        <Button title="Add" onPress={handleAddRentAmounts} />
+      </View>
+      {rentAmounts.map(({date,amount})=>
+        <View key={date} style={{flexDirection:"row",gap:10,marginTop:10}}>
+          <Text>{date}</Text>
+          <Text>{amount}</Text>
+        </View>
+      )}
+    </>
+  );
+
+  const submitRentee = async (roomData: any) => {
     const response = await fetchData({
       url: `${RENTEE_API}${renteeId ? "/" + renteeId : ""}`,
       method: renteeId ? "PUT" : "POST",
@@ -52,9 +98,10 @@ const RoomRentalForm = () => {
       endDate,
       deposits,
       monthlyRent,
+      rentAmounts,
       room: roomId,
     };
-    const response = await submitRoom(formData);
+    const response = await submitRentee(formData);
     // Handle form submission (e.g., send data to server)
     router.dismiss();
   };
@@ -110,6 +157,8 @@ const RoomRentalForm = () => {
         value={monthlyRent}
         onChangeText={setRentalAmount}
       />
+
+      {rentAmountHTML()}
 
       <Button title="Submit" onPress={handleSubmit} />
     </View>
