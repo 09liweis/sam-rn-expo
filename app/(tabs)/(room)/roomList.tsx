@@ -1,5 +1,6 @@
 import { Link, router } from "expo-router";
 import React, { useEffect } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import {
   View,
   Text,
@@ -26,9 +27,16 @@ const RoomList = () => {
   const renderRoom = ({ item }: any) => (
     <Pressable
       onPress={() => router.push(`(room)/roomForm?roomId=${item._id}`)}
-      style={styles.card}
+      style={{ flex: 1 }}
     >
-      <Text style={styles.roomName}>{item.nm}</Text>
+      <LinearGradient
+        // Background Linear Gradient
+        end={{ x: 0.1, y: 0.2 }}
+        colors={["#fff", primaryColor]}
+        style={styles.card}
+      >
+        <Text style={styles.roomName}>{item.nm}</Text>
+      </LinearGradient>
     </Pressable>
   );
 
@@ -40,6 +48,7 @@ const RoomList = () => {
         renderItem={renderRoom}
         keyExtractor={(item: Room) => item._id}
         contentContainerStyle={styles.list}
+        columnWrapperStyle={{ gap: 20 }}
       />
       <Link style={styles.addButton} href={`(room)/roomForm`}>
         Add
@@ -54,7 +63,6 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   card: {
-    flex:1,
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
