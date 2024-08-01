@@ -1,6 +1,13 @@
 import { Link, router } from "expo-router";
 import React, { useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Button } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Button,
+  Pressable,
+} from "react-native";
 import {
   primaryColor,
   secondaryColor,
@@ -17,14 +24,18 @@ const RoomList = () => {
   }, []);
 
   const renderRoom = ({ item }: any) => (
-    <Link href={`(room)/roomForm?roomId=${item._id}`} style={styles.card}>
+    <Pressable
+      onPress={() => router.push(`(room)/roomForm?roomId=${item._id}`)}
+      style={styles.card}
+    >
       <Text style={styles.roomName}>{item.nm}</Text>
-    </Link>
+    </Pressable>
   );
 
   return (
     <>
       <FlatList
+        numColumns={2}
         data={rentRoomList}
         renderItem={renderRoom}
         keyExtractor={(item: Room) => item._id}
@@ -40,12 +51,13 @@ const RoomList = () => {
 const styles = StyleSheet.create({
   list: {
     padding: 20,
+    gap: 20,
   },
   card: {
+    flex:1,
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
-    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
