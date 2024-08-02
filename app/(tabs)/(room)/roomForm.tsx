@@ -6,6 +6,7 @@ import {
   Button,
   StyleSheet,
   FlatList,
+  ScrollView
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Link, router, useLocalSearchParams } from "expo-router";
@@ -71,7 +72,7 @@ const RoomRentalForm = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.label}>Room Name</Text>
       <TextInput
         style={styles.input}
@@ -86,7 +87,7 @@ const RoomRentalForm = () => {
         keyExtractor={(item) => item._id}
       />
       <Link href={`(room)/renteeForm?roomId=${roomId}`}>Add new rentee</Link>
-    </View>
+    </ScrollView>
   );
 };
 

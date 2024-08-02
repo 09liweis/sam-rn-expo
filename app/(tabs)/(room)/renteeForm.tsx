@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "src/utils";
@@ -107,7 +107,7 @@ const RoomRentalForm = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.label}>Rentee Name</Text>
       <TextInput
         style={styles.input}
@@ -161,7 +161,7 @@ const RoomRentalForm = () => {
       {rentAmountHTML()}
 
       <Button title="Submit" onPress={handleSubmit} />
-    </View>
+    </ScrollView>
   );
 };
 
