@@ -6,13 +6,14 @@ import {
   Button,
   StyleSheet,
   FlatList,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Link, router, useLocalSearchParams } from "expo-router";
 import { fetchData } from "src/utils";
 import { ROOM_API } from "src/constant/api";
 import useRentStore from "src/stores/rentStore";
+import AddBtn from "components/rental/addBtn";
 
 const RoomRentalForm = () => {
   const { fetchRoomList, fetchRoomDetail } = useRentStore();
@@ -86,7 +87,10 @@ const RoomRentalForm = () => {
         renderItem={renderRentee}
         keyExtractor={(item) => item._id}
       />
-      <Link href={`(room)/renteeForm?roomId=${roomId}`}>Add new rentee</Link>
+      <AddBtn
+        href={`(room)/renteeForm?roomId=${roomId}`}
+        title="Add new rentee"
+      />
     </ScrollView>
   );
 };
