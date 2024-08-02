@@ -17,6 +17,7 @@ import {
 import useRentStore from "src/stores/rentStore";
 import { Room } from "src/types/roomType";
 import AddBtn from "components/rental/addBtn";
+import CardContainer from "components/rental/CardContainer";
 
 const RoomList = () => {
   const { fetchRoomList, rentRoomList } = useRentStore();
@@ -26,19 +27,9 @@ const RoomList = () => {
   }, []);
 
   const renderRoom = ({ item }: any) => (
-    <Pressable
-      onPress={() => router.push(`(room)/roomForm?roomId=${item._id}`)}
-      style={{ flex: 1 }}
-    >
-      <LinearGradient
-        // Background Linear Gradient
-        end={{ x: 0.1, y: 0.2 }}
-        colors={["#fff", primaryColor]}
-        style={styles.card}
-      >
-        <Text style={styles.roomName}>{item.nm}</Text>
-      </LinearGradient>
-    </Pressable>
+    <CardContainer href={`(room)/roomForm?roomId=${item._id}`}>
+      <Text style={styles.roomName}>{item.nm}</Text>
+    </CardContainer>
   );
 
   return (
@@ -60,16 +51,6 @@ const styles = StyleSheet.create({
   list: {
     padding: 20,
     gap: 20,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
   },
   roomName: {
     color: primaryColor,
