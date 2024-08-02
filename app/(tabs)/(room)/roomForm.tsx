@@ -73,25 +73,29 @@ const RoomRentalForm = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.label}>Room Name</Text>
-      <TextInput
-        style={styles.input}
-        value={roomName}
-        onChangeText={setRoomName}
-      />
+    <View style={styles.container}>
+      <ScrollView>
+        <Text style={styles.label}>Room Name</Text>
+        <TextInput
+          style={styles.input}
+          value={roomName}
+          onChangeText={setRoomName}
+        />
 
-      <Button title="Submit" onPress={handleSubmit} />
-      <FlatList
-        data={rentees}
-        renderItem={renderRentee}
-        keyExtractor={(item) => item._id}
-      />
-      <AddBtn
-        href={`(room)/renteeForm?roomId=${roomId}`}
-        title="Add new rentee"
-      />
-    </ScrollView>
+        <Button title="Submit" onPress={handleSubmit} />
+        <FlatList
+          data={rentees}
+          renderItem={renderRentee}
+          keyExtractor={(item) => item._id}
+        />
+      </ScrollView>
+      {roomId && (
+        <AddBtn
+          href={`(room)/renteeForm?roomId=${roomId}`}
+          title="Add new rentee"
+        />
+      )}
+    </View>
   );
 };
 
