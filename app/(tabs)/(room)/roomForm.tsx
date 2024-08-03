@@ -14,6 +14,7 @@ import { fetchData } from "src/utils";
 import { ROOM_API } from "src/constant/api";
 import useRentStore from "src/stores/rentStore";
 import AddBtn from "components/rental/addBtn";
+import CardContainer from "components/rental/CardContainer";
 
 const RoomRentalForm = () => {
   const { fetchRoomList, fetchRoomDetail } = useRentStore();
@@ -61,15 +62,15 @@ const RoomRentalForm = () => {
   };
 
   const renderRentee = ({ item }: any) => (
-    <Link href={`(room)/renteeForm?renteeId=${item._id}&roomId=${roomId}`}>
-      <View style={styles.card}>
-        <Text style={styles.roomName}>{item.nm}</Text>
-        <Text>Start Date: {item.startDate}</Text>
-        <Text>End Date: {item.endDate}</Text>
-        <Text>Deposits: {item.deposits}</Text>
-        <Text>Rent: {item.monthlyRent}</Text>
-      </View>
-    </Link>
+    <CardContainer href={`(room)/renteeForm?renteeId=${item._id}&roomId=${roomId}`}>
+      <>
+      <Text style={styles.roomName}>{item.nm}</Text>
+      <Text>Start Date: {item.startDate}</Text>
+      <Text>End Date: {item.endDate}</Text>
+      <Text>Deposits: {item.deposits}</Text>
+      <Text>Rent: {item.monthlyRent}</Text>
+      </>
+    </CardContainer>
   );
 
   return (
@@ -86,6 +87,7 @@ const RoomRentalForm = () => {
         <FlatList
           data={rentees}
           renderItem={renderRentee}
+          contentContainerStyle={{gap:20}}
           keyExtractor={(item) => item._id}
         />
       </ScrollView>
@@ -115,29 +117,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 16,
     borderRadius: 4,
-  },
-
-  list: {
-    padding: 20,
-  },
-  card: {
-    width: "100%",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-    flexDirection: "column",
-  },
-  roomName: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
+  }
 });
 
 export default RoomRentalForm;

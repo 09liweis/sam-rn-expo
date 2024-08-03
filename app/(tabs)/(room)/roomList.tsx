@@ -18,6 +18,7 @@ import useRentStore from "src/stores/rentStore";
 import { Room } from "src/types/roomType";
 import AddBtn from "components/rental/addBtn";
 import CardContainer from "components/rental/CardContainer";
+import PageScreenContainer from "components/rental/ScreenContainer";
 
 const RoomList = () => {
   const { fetchRoomList, rentRoomList } = useRentStore();
@@ -33,23 +34,24 @@ const RoomList = () => {
   );
 
   return (
-    <>
-      <FlatList
-        numColumns={2}
-        data={rentRoomList}
-        renderItem={renderRoom}
-        keyExtractor={(item: Room) => item._id}
-        contentContainerStyle={styles.list}
-        columnWrapperStyle={{ gap: 20 }}
-      />
-      <AddBtn href={`(room)/roomForm`} title="Add" />
-    </>
+    <PageScreenContainer>
+      <>
+        <FlatList
+          numColumns={2}
+          data={rentRoomList}
+          renderItem={renderRoom}
+          keyExtractor={(item: Room) => item._id}
+          contentContainerStyle={styles.list}
+          columnWrapperStyle={styles.list}
+        />
+        <AddBtn href={`(room)/roomForm`} title="Add" />
+      </>
+    </PageScreenContainer>
   );
 };
 
 const styles = StyleSheet.create({
   list: {
-    padding: 20,
     gap: 20,
   },
   roomName: {
