@@ -1,17 +1,18 @@
 export type ExpensesType = {
-  total:string,
-  date:string,
-  categoryPrice:CategoryItem
-}
+  total: string;
+  date: string;
+  categoryPrice: CategoryItem;
+};
 
 export type CategoryItem = {
   category: string;
   total: string;
+  percentage: number;
   items: Expense[];
 };
 
 export type CategoryItemProps = {
-  categoryItem: CategoryItem
+  categoryItem: CategoryItem;
 };
 
 export type Expense = {
