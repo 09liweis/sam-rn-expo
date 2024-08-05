@@ -25,7 +25,7 @@ const CardContainer = ({href,children}:AddBtnProps) => {
     >
       <LinearGradient
         // Background Linear Gradient
-        end={{ x: 0.1, y: 0.2 }}
+        start={{ x: 0.1, y: 0.2 }}
         colors={["#fff", primaryColor]}
         style={styles.card}
       >
