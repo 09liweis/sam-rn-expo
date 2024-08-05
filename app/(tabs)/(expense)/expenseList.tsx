@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { ScreenContainer } from "react-native-screens";
 import { fetchData } from "src/utils";
 
 const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
@@ -35,7 +36,7 @@ export default function App() {
     getExpenses();
   }, []);
   return (
-    <View style={styles.container}>
+    <ScreenContainer>
       <StatusBar />
       <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
         <Text>Total Expenses</Text>
@@ -54,15 +55,11 @@ export default function App() {
       ) : (
         <Chart totals={totals} expenses={expenses} />
       )}
-    </View>
+    </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    flex: 1,
-  },
   expensesContainer: {
     width: "100%",
   },
