@@ -1,10 +1,10 @@
 import CategoryItem from "components/expense/CategoryItem";
 import { Chart } from "components/expense/Chart";
+import PageScreenContainer from "components/rental/ScreenContainer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
-import { ScreenContainer } from "react-native-screens";
 import { fetchData } from "src/utils";
 
 const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
@@ -36,8 +36,8 @@ export default function App() {
     getExpenses();
   }, []);
   return (
-    <ScreenContainer>
-      <StatusBar />
+    <PageScreenContainer>
+      <>
       <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
         <Text>Total Expenses</Text>
         <Text style={{ color: "red", fontWeight: "bold" }}>{totals}</Text>
@@ -55,7 +55,8 @@ export default function App() {
       ) : (
         <Chart totals={totals} expenses={expenses} />
       )}
-    </ScreenContainer>
+      </>
+    </PageScreenContainer>
   );
 }
 

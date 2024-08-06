@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import React, { ReactElement, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -6,7 +7,12 @@ type AddBtnProps = {
 };
 
 const PageScreenContainer = ({ children }: AddBtnProps) => {
-  return <View style={styles.default}>{children}</View>;
+  return (
+    <View style={styles.default}>
+      <StatusBar />
+      {children}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
