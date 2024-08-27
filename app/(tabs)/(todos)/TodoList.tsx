@@ -10,6 +10,10 @@ import {
 import { TODO_API } from "src/constant/api";
 import { fetchData } from "src/utils";
 const TodoList = () => {
+
+  const [showForm, setShowForm] = useState(false);
+  const [todo, setTodo] = useState<any>({});
+  
   const [todos, setTodos] = useState([]);
   const fetchTodos = async () => {
     const responses = await fetchData({ url: TODO_API });
@@ -42,19 +46,33 @@ const TodoList = () => {
   }, []);
 
   return (
-    <ScrollView style={todoStyles.todoPageContainer}>
-      <FlatList
-        data={todos}
-        renderItem={renderTodo}
-        contentContainerStyle={todoStyles.todoList}
-      />
-    </ScrollView>
+    <View style={todoStyles.todoPageContainer}>
+      <ScrollView >
+        <FlatList
+          data={todos}
+          renderItem={renderTodo}
+          contentContainerStyle={todoStyles.todoList}
+        />
+      </ScrollView>
+      <Pressable style={todoStyles.todoAddBtn}>
+        <Text>+</Text>
+      </Pressable>
+    </View>
   );
 };
 
 const todoStyles = StyleSheet.create({
   todoPageContainer: {
+    position:'relative',
     flex: 1,
+  },
+  todoAddBtn:{
+    position:'absolute',
+    bottom:10,
+    right:10,
+    padding:20,
+    borderRadius:100,
+    backgroundColor:'#369eff'
   },
   todoList: {
     padding: 10,
