@@ -38,6 +38,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="(todos)"
+        options={{
+          headerShown: false,
+          title: "Todos",
+          tabBarLabel: "Todos",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="list" color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="(movies)"
         options={{
           headerShown: false,
