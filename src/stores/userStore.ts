@@ -15,10 +15,14 @@ const useUserStore = create<UserStore>()((set) => ({
       } catch (e) {
         // saving error
       }
+      fetcUserDetail();
     }
   },
-  fetchUserDetail: async (roomId: string) => {
-    
+  fetchUserDetail: async () => {
+    const response = await fetchData({ method:"POST", url: USER_API });
+    if(response.user) {
+      set({ curUser: response.user });
+    }
   },
 }));
 export default useUserStore;
