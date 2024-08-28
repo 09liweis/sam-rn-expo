@@ -14,6 +14,23 @@ const TodoList = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [todo, setTodo] = useState<any>({});
+
+  const handleTodoUpsert = async () => {
+    const { _id } = todo;
+    const method = _id ? "PUT" : "POST";
+    const { todo: newTodo } = await fetchData({
+      url: `${TODO_API}/${_id||''}`,
+      method,
+      body: todo,
+    });
+    fetchTodos();
+    setShowForm(false);
+  }
+
+  const handleTodoForm = (todo: any) => {
+    setTodo(todo);
+    setShowForm(true);
+  }
   
   const [todos, setTodos] = useState([]);
   const fetchTodos = async () => {
@@ -24,6 +41,7 @@ const TodoList = () => {
     const { _id, name, date, status } = item;
     return (
       <Pressable
+        onPress={() => handleTodoForm(item)}
         onLongPress={() => handleTodoDelete(_id)}
         style={todoStyles.todoItem}
         key={_id}
@@ -56,15 +74,15 @@ const TodoList = () => {
         />
       </ScrollView>
       <Pressable onPress={()=>setShowForm(true)} style={todoStyles.todoAddBtn}>
-        <Text>+</Text>
+        +
       </Pressable>
 
       {showForm &&
         <View style={todoStyles.todoFormContainer}>
           <View style={todoStyles.todoForm}>
-            <TextInput placeholder="name" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,name:text})} />
-            <TextInput placeholder="date" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,date:text})} />
-            <Pressable style={todoStyles.todoFormBtn} onPress={()=>setShowForm(false)}>Add</Pressable>
+            <TextInput value={todo.name} placeholder="name" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,name:text})} />
+            <TextInput value={todo.date} placeholder="date" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,date:text})} />
+            <Pressable style={todoStyles.todoFormBtn} onPress={handleTodoUpsert}>Add</Pressable>
           </View>
         </View>
       }
@@ -108,6 +126,8 @@ const todoStyles = StyleSheet.create({
     borderRadius:10
   },
   todoAddBtn:{
+    color:'#fff',
+    fontSize:24,
     position:'absolute',
     bottom:10,
     right:10,
