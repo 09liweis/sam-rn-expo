@@ -69,6 +69,16 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="(user)"
+        options={{
+          headerShown: false,
+          title: "Login",
+          tabBarIcon: ({ color }) => (
+            <FontAwesome size={28} name="user" color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

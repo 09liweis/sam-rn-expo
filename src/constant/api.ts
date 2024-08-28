@@ -5,3 +5,5 @@ export const ROOM_API = `${BASE_URL}/api/rooms`;
 export const RENTEE_API = `${BASE_URL}/api/rentees`;
 
 export const TODO_API = `${BASE_URL}/api/todos`;
+
+export const LOGIN_API = `${BASE_URL}/api/login`;
