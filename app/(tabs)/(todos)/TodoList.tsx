@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { TODO_API } from "src/constant/api";
-import { fetchData } from "src/utils";
+import { fetchData, showToast } from "src/utils";
 const TodoList = () => {
 
   const [showForm, setShowForm] = useState(false);
@@ -23,6 +23,7 @@ const TodoList = () => {
       method,
       body: todo,
     });
+    showToast("Added");
     fetchTodos();
     setShowForm(false);
   }
@@ -57,6 +58,7 @@ const TodoList = () => {
       url: `${TODO_API}/${todoId}`,
       method: "DELETE",
     });
+    showToast("Deleted");
     fetchTodos();
   };
 
