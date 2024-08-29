@@ -1,6 +1,7 @@
 import {View,Text,TextInput,Pressable} from 'react-native';
 import { useEffect, useState } from "react";
 import useUserStore from "src/stores/userStore";
+import { showToast } from 'src/utils';
 
 const LoginPage = () => {
 
@@ -10,7 +11,8 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    await login({eml:email,pwd:password});
+    const {msg} = await login({eml:email,pwd:password});
+    showToast(msg);
   }
   
   return (

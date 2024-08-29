@@ -38,3 +38,10 @@ export const fetchData = async ({
     return { error };
   }
 };
+
+import Toast from 'react-native-root-toast';
+export const showToast = (message: string) => {
+  let toast = Toast.show(message, {
+    duration: Toast.durations.SHORT,
+  });
+}

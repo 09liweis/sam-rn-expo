@@ -5,10 +5,11 @@ export type User = {
 
 export type LoginResponse = {
   token:string;
+  msg:string;
 };
 
 export type UserStore = {
   curUser?: User;
-  login:()=>Promise<LoginResponse>;
-  fetchUserDetail: () => Promise<User>;
+  login:({eml,pwd}:any)=>Promise<LoginResponse>;
+  // fetchUserDetail: () => Promise<User>;
 };
