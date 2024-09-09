@@ -8,9 +8,28 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { TODO_API } from "src/constant/api";
+import { TODO_API, TODO_LIST_API } from "src/constant/api";
 import { fetchData, showToast } from "src/utils";
-const TodoList = () => {
+const TodoListPage = () => {
+  const [todoLists, setTodoLists] = useState([]);
+  const fetchTodolists = async () => {
+    const response = await fetchData({ url: TODO_LIST_API });
+    setTodoLists(response.todoLists);
+  };
+
+  const [todoList, setTodoList] = useState<any>({});
+  const handleTodoListUpsert = async () => {
+    const { _id } = todoList;
+    const method = _id ? "PUT" : "POST";
+    const {} = await fetchData({
+      url: `${TODO_LIST_API}/${_id || ""}`,
+      method,
+      body: todoList,
+    });
+    setTodoList(todoList);
+    showToast("Todo List Created");
+    fetchTodolists();
+  };
 
   const [showForm, setShowForm] = useState(false);
   const [todo, setTodo] = useState<any>({});
@@ -19,20 +38,20 @@ const TodoList = () => {
     const { _id } = todo;
     const method = _id ? "PUT" : "POST";
     const { todo: newTodo } = await fetchData({
-      url: `${TODO_API}/${_id||''}`,
+      url: `${TODO_API}/${_id || ""}`,
       method,
       body: todo,
     });
     showToast("Added");
     fetchTodos();
     setShowForm(false);
-  }
+  };
 
   const handleTodoForm = (todo: any) => {
     setTodo(todo);
     setShowForm(true);
-  }
-  
+  };
+
   const [todos, setTodos] = useState([]);
   const fetchTodos = async () => {
     const responses = await fetchData({ url: TODO_API });
@@ -53,6 +72,10 @@ const TodoList = () => {
     );
   };
 
+  const AssignTodo2TodoList = async (todoListId, todoId) => {
+    
+  }
+
   const handleTodoDelete = async (todoId: string) => {
     const response = await fetchData({
       url: `${TODO_API}/${todoId}`,
@@ -63,79 +86,124 @@ const TodoList = () => {
   };
 
   useEffect(() => {
+    fetchTodolists();
     fetchTodos();
   }, []);
 
   return (
     <View style={todoStyles.todoPageContainer}>
-      <ScrollView >
+      <View>
+        <TextInput
+          value={todoList?.name||""}
+          onChangeText={(text) => setTodoList({ ...todoList, name: text })}
+        />
+        <Pressable onPress={handleTodoListUpsert}>
+          <Text>Add TodoList</Text>
+        </Pressable>
+        {todoLists.map(({ _id, name }) => (
+          <View key={_id}>
+            <Text>{name}</Text>
+          </View>
+        ))}
+      </View>
+
+      <ScrollView>
         <FlatList
           data={todos}
           renderItem={renderTodo}
           contentContainerStyle={todoStyles.todoList}
         />
       </ScrollView>
-      <Pressable onPress={()=>setShowForm(true)} style={todoStyles.todoAddBtn}>
-        +
+      <Pressable
+        onPress={() => setShowForm(true)}
+        style={todoStyles.todoAddBtn}
+      >
+        <Text>+</Text>
       </Pressable>
 
-      {showForm &&
+      {showForm && (
         <View style={todoStyles.todoFormContainer}>
           <View style={todoStyles.todoForm}>
-            <TextInput value={todo.name} placeholder="name" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,name:text})} />
-            <TextInput value={todo.date} placeholder="date" style={todoStyles.todoFormInput} onChangeText={(text)=>setTodo({...todo,date:text})} />
-            <Pressable style={todoStyles.todoFormBtn} onPress={handleTodoUpsert}>Add</Pressable>
+            <TextInput
+              value={todo.name}
+              placeholder="name"
+              style={todoStyles.todoFormInput}
+              onChangeText={(text) => setTodo({ ...todo, name: text })}
+            />
+            <TextInput
+              value={todo.date}
+              placeholder="date"
+              style={todoStyles.todoFormInput}
+              onChangeText={(text) => setTodo({ ...todo, date: text })}
+            />
+            {todoLists.map(({ _id, name }) => (
+              <Pressable onPress={()=>AssignTodo2TodoList(_id,todo._id)} key={_id}>
+                <Text>{name}</Text>
+              </Pressable>
+            ))}
+            <Pressable
+              style={todoStyles.todoFormBtn}
+              onPress={handleTodoUpsert}
+            >
+              <Text>Add</Text>
+            </Pressable>
+            <Pressable
+              style={todoStyles.todoFormBtn}
+              onPress={()=>setShowForm(false)}
+            >
+              <Text>Cancel</Text>
+            </Pressable>
           </View>
         </View>
-      }
-      
+      )}
     </View>
   );
 };
 
 const todoStyles = StyleSheet.create({
   todoPageContainer: {
-    position:'relative',
+    position: "relative",
     flex: 1,
+    flexDirection:"row"
   },
-  todoFormContainer:{
-    position:'absolute',
-    flex:1,
-    backgroundColor:'rgba(0,0,0,0.5)',
-    justifyContent:'center',
-    alignItems:'center',
-    top:0,
-    left:0,
-    width:'100%',
-    height:'100%'
+  todoFormContainer: {
+    position: "absolute",
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
   },
-  todoForm:{
-    padding:10,
-    backgroundColor:'#fff',
-    width:'60%',
-    gap:10
+  todoForm: {
+    padding: 10,
+    backgroundColor: "#fff",
+    width: "60%",
+    gap: 10,
   },
-  todoFormInput:{
-    padding:10,
-    borderWidth:1,
-    borderRadius:10
+  todoFormInput: {
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 10,
   },
-  todoFormBtn:{
-    color:'#fff',
-    backgroundColor:'#369eff',
-    padding:10,
-    textAlign:'center',
-    borderRadius:10
+  todoFormBtn: {
+    color: "#fff",
+    backgroundColor: "#369eff",
+    padding: 10,
+    textAlign: "center",
+    borderRadius: 10,
   },
-  todoAddBtn:{
-    color:'#fff',
-    fontSize:24,
-    position:'absolute',
-    bottom:10,
-    right:10,
-    padding:20,
-    borderRadius:100,
-    backgroundColor:'#369eff'
+  todoAddBtn: {
+    color: "#fff",
+    fontSize: 24,
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    padding: 20,
+    borderRadius: 100,
+    backgroundColor: "#369eff",
   },
   todoList: {
     padding: 10,
@@ -156,4 +224,4 @@ const todoStyles = StyleSheet.create({
   },
 });
 
-export default TodoList;
+export default TodoListPage;
