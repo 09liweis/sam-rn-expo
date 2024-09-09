@@ -37,6 +37,7 @@ const TodoListPage = () => {
   const handleTodoUpsert = async () => {
     const { _id } = todo;
     const method = _id ? "PUT" : "POST";
+    todo.todoList = todoList._id;
     const { todo: newTodo } = await fetchData({
       url: `${TODO_API}/${_id || ""}`,
       method,
@@ -45,6 +46,7 @@ const TodoListPage = () => {
     showToast("Added");
     fetchTodos();
     setShowForm(false);
+    setTodo({});
   };
 
   const handleTodoForm = (todo: any) => {
@@ -54,8 +56,11 @@ const TodoListPage = () => {
 
   const [todos, setTodos] = useState([]);
   const fetchTodos = async () => {
-    const responses = await fetchData({ url: TODO_API });
-    setTodos(responses);
+    if (!todoList?._id) {
+      return;
+    }
+    const {todos} = await fetchData({ url: `${TODO_LIST_API}/${todoList?._id}` });
+    setTodos(todos);
   };
   const renderTodo = ({ item }: any) => {
     const { _id, name, date, status } = item;
@@ -87,8 +92,11 @@ const TodoListPage = () => {
 
   useEffect(() => {
     fetchTodolists();
-    fetchTodos();
   }, []);
+
+  useEffect(()=>{
+    fetchTodos();
+  },[todoList._id])
 
   return (
     <View style={todoStyles.todoPageContainer}>
@@ -101,9 +109,9 @@ const TodoListPage = () => {
           <Text>Add TodoList</Text>
         </Pressable>
         {todoLists.map(({ _id, name }) => (
-          <View key={_id}>
+          <Pressable onPress={()=>setTodoList({_id,name})} style={todoStyles.todoListItem} key={_id}>
             <Text>{name}</Text>
-          </View>
+          </Pressable>
         ))}
       </View>
 
@@ -125,13 +133,13 @@ const TodoListPage = () => {
         <View style={todoStyles.todoFormContainer}>
           <View style={todoStyles.todoForm}>
             <TextInput
-              value={todo.name}
+              value={todo.name||""}
               placeholder="name"
               style={todoStyles.todoFormInput}
               onChangeText={(text) => setTodo({ ...todo, name: text })}
             />
             <TextInput
-              value={todo.date}
+              value={todo.date||""}
               placeholder="date"
               style={todoStyles.todoFormInput}
               onChangeText={(text) => setTodo({ ...todo, date: text })}
@@ -165,6 +173,11 @@ const todoStyles = StyleSheet.create({
     position: "relative",
     flex: 1,
     flexDirection:"row"
+  },
+  todoListItem: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   todoFormContainer: {
     position: "absolute",
