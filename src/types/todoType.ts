@@ -1,7 +1,7 @@
 export interface Loc {
-  addr:string;
-  lat:number;
-  lng:number;
+  addr: string;
+  lat: number;
+  lng: number;
 }
 
 export interface Todo {
@@ -10,13 +10,24 @@ export interface Todo {
   date?: string;
   status?: boolean;
   todoList?: string;
-  loc?:Loc
+  loc?: Loc;
 }
 
-export const EMPTY_TODO = {name:''};
+export const EMPTY_TODO = { name: "" };
 
 export interface TodoList {
   _id?: string;
   name: string;
-  items: Todo[];
+  items?: Todo[];
 }
+
+export interface TodoListsResponse {
+  todoLists: TodoList[];
+}
+
+export type TodoStore = {
+  todoLists: Array<TodoList>;
+  fetchTodoLists: () => void;
+  curTodoList?: TodoList;
+  setCurTodoList: (todoList: TodoList) => void;
+};

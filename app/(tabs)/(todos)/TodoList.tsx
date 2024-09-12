@@ -11,15 +11,12 @@ import {
 } from "react-native";
 import { PLACE_SEARCH_API, TODO_API, TODO_LIST_API } from "src/constant/api";
 import useDebounce from "src/hooks/useDebounce";
+import useTodoStore from "src/stores/todoStore";
 import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const [todoLists, setTodoLists] = useState([]);
-  const fetchTodolists = async () => {
-    const response = await fetchData({ url: TODO_LIST_API });
-    setTodoLists(response.todoLists);
-  };
+  const {fetchTodoLists, todoLists, setCurTodoList} = useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
   const handleTodoListUpsert = async () => {
@@ -32,7 +29,7 @@ const TodoListPage = () => {
     });
     setTodoList(todoList);
     showToast("Todo List Created");
-    fetchTodolists();
+    fetchTodoLists();
   };
 
   const [showForm, setShowForm] = useState(false);
@@ -107,7 +104,7 @@ const TodoListPage = () => {
   };
 
   useEffect(() => {
-    fetchTodolists();
+    fetchTodoLists();
   }, []);
 
   useEffect(()=>{
