@@ -25,9 +25,15 @@ export interface TodoListsResponse {
   todoLists: TodoList[];
 }
 
+export interface TodosResponse {
+  todos: Todo[];
+}
+
 export type TodoStore = {
   todoLists: Array<TodoList>;
   fetchTodoLists: () => void;
   curTodoList?: TodoList;
   setCurTodoList: (todoList: TodoList) => void;
+  todos:Todo[],
+  fetchTodos: () => void;
 };

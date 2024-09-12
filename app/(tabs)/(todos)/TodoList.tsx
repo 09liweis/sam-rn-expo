@@ -16,7 +16,7 @@ import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const {fetchTodoLists, todoLists, setCurTodoList} = useTodoStore();
+  const {fetchTodoLists, todoLists, setCurTodoList,todos,fetchTodos} = useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
   const handleTodoListUpsert = async () => {
@@ -80,14 +80,6 @@ const TodoListPage = () => {
     setShowForm(true);
   };
 
-  const [todos, setTodos] = useState([]);
-  const fetchTodos = async () => {
-    if (!todoList?._id) {
-      return;
-    }
-    const {todos} = await fetchData({ url: `${TODO_LIST_API}/${todoList?._id}` });
-    setTodos(todos);
-  };
   const renderTodo = ({ item }: any) => {
     return (
       <TodoCard todo={item} handleTodoPress={()=>handleTodoPress(item)} />
@@ -107,10 +99,6 @@ const TodoListPage = () => {
     fetchTodoLists();
   }, []);
 
-  useEffect(()=>{
-    fetchTodos();
-  },[todoList._id])
-
   return (
     <View style={todoStyles.todoPageContainer}>
       <View>
@@ -122,7 +110,7 @@ const TodoListPage = () => {
           <Text>Add TodoList</Text>
         </Pressable>
         {todoLists.map(({ _id, name }) => (
-          <Pressable onPress={()=>setTodoList({_id,name})} style={todoStyles.todoListItem} key={_id}>
+          <Pressable onPress={()=>setCurTodoList({_id,name})} style={todoStyles.todoListItem} key={_id}>
             <Text>{name}</Text>
           </Pressable>
         ))}
