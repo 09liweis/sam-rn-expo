@@ -1,4 +1,4 @@
-import TodoCard from "components/todo/TodoCard";
+import TodoCardList from "components/todo/TodoCardList";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -16,7 +16,8 @@ import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const {fetchTodoLists, todoLists, setCurTodoList,todos,fetchTodos} = useTodoStore();
+  const { fetchTodoLists, todoLists, setCurTodoList, todos, fetchTodos } =
+    useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
   const handleTodoListUpsert = async () => {
@@ -44,21 +45,23 @@ const TodoListPage = () => {
 
   const searchLocation = async (location: string) => {
     if (!location) return;
-    const response = await fetchData({url:`${PLACE_SEARCH_API}${location}`});
-    const {features} = response;
+    const response = await fetchData({ url: `${PLACE_SEARCH_API}${location}` });
+    const { features } = response;
     if (!features) return;
-    const locations:Loc[] = [];
-    console.log(features)
-    features.map((feature:any)=>{
-      const {properties:{coordinates,name}} = feature;
+    const locations: Loc[] = [];
+    console.log(features);
+    features.map((feature: any) => {
+      const {
+        properties: { coordinates, name },
+      } = feature;
       locations.push({
-        addr:name,
-        lat:coordinates.latitude,
-        lng:coordinates.longitude
+        addr: name,
+        lat: coordinates.latitude,
+        lng: coordinates.longitude,
       });
     });
     setSearchLocations(locations);
-  }
+  };
 
   const handleTodoUpsert = async () => {
     const { _id } = todo;
@@ -80,12 +83,6 @@ const TodoListPage = () => {
     setShowForm(true);
   };
 
-  const renderTodo = ({ item }: any) => {
-    return (
-      <TodoCard todo={item} handleTodoPress={()=>handleTodoPress(item)} />
-    );
-  };
-
   const handleTodoDelete = async (todoId: string) => {
     const response = await fetchData({
       url: `${TODO_API}/${todoId}`,
@@ -103,26 +100,25 @@ const TodoListPage = () => {
     <View style={todoStyles.todoPageContainer}>
       <View>
         <TextInput
-          value={todoList?.name||""}
+          value={todoList?.name || ""}
           onChangeText={(text) => setTodoList({ ...todoList, name: text })}
         />
         <Pressable onPress={handleTodoListUpsert}>
           <Text>Add TodoList</Text>
         </Pressable>
         {todoLists.map(({ _id, name }) => (
-          <Pressable onPress={()=>setCurTodoList({_id,name})} style={todoStyles.todoListItem} key={_id}>
+          <Pressable
+            onPress={() => setCurTodoList({ _id, name })}
+            style={todoStyles.todoListItem}
+            key={_id}
+          >
             <Text>{name}</Text>
           </Pressable>
         ))}
       </View>
 
-      <ScrollView>
-        <FlatList
-          data={todos}
-          renderItem={renderTodo}
-          contentContainerStyle={todoStyles.todoList}
-        />
-      </ScrollView>
+      <TodoCardList todos={todos} handleTodoPress={handleTodoPress} />
+
       <Pressable
         onPress={() => setShowForm(true)}
         style={todoStyles.todoAddBtn}
@@ -134,23 +130,30 @@ const TodoListPage = () => {
         <View style={todoStyles.todoFormContainer}>
           <View style={todoStyles.todoForm}>
             <TextInput
-              value={todo.name||""}
+              value={todo.name || ""}
               placeholder="name"
               style={todoStyles.todoFormInput}
               onChangeText={(text) => setTodo({ ...todo, name: text })}
             />
             <TextInput
-              value={todo.date||""}
+              value={todo.date || ""}
               placeholder="date"
               style={todoStyles.todoFormInput}
               onChangeText={(text) => setTodo({ ...todo, date: text })}
             />
-            <TextInput placeholder="search location" style={todoStyles.todoFormInput} onChangeText={(text)=>setSearchText(text)} />
-            {searchLocations.map((loc)=>
-              <Pressable key={loc.addr} onPress={()=>setTodo({...todo,loc})}>
+            <TextInput
+              placeholder="search location"
+              style={todoStyles.todoFormInput}
+              onChangeText={(text) => setSearchText(text)}
+            />
+            {searchLocations.map((loc) => (
+              <Pressable
+                key={loc.addr}
+                onPress={() => setTodo({ ...todo, loc })}
+              >
                 <Text>{loc.addr}</Text>
               </Pressable>
-            )}
+            ))}
             <Pressable
               style={todoStyles.todoFormBtn}
               onPress={handleTodoUpsert}
@@ -159,7 +162,7 @@ const TodoListPage = () => {
             </Pressable>
             <Pressable
               style={todoStyles.todoFormBtn}
-              onPress={()=>setShowForm(false)}
+              onPress={() => setShowForm(false)}
             >
               <Text>Cancel</Text>
             </Pressable>
@@ -174,7 +177,7 @@ const todoStyles = StyleSheet.create({
   todoPageContainer: {
     position: "relative",
     flex: 1,
-    flexDirection:"row"
+    flexDirection: "row",
   },
   todoListItem: {
     padding: 10,
@@ -220,11 +223,6 @@ const todoStyles = StyleSheet.create({
     borderRadius: 100,
     backgroundColor: "#369eff",
   },
-  todoList: {
-    padding: 10,
-    flex: 1,
-    gap: 10,
-  }
 });
 
 export default TodoListPage;
