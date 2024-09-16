@@ -104,7 +104,7 @@ const TodoListPage = () => {
           onChangeText={(text) => setTodoList({ ...todoList, name: text })}
         />
         <Pressable onPress={handleTodoListUpsert}>
-          <Text>Add TodoList</Text>
+          <Text>Add New TodoList</Text>
         </Pressable>
         {todoLists.map(({ _id, name }) => (
           <Pressable
