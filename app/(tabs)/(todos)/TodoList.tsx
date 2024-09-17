@@ -67,12 +67,12 @@ const TodoListPage = () => {
     const { _id } = todo;
     const method = _id ? "PUT" : "POST";
     todo.todoList = todoList._id;
-    const { todo: newTodo } = await fetchData({
+    const { todo: newTodo, msg } = await fetchData({
       url: `${TODO_API}/${_id || ""}`,
       method,
       body: todo,
     });
-    showToast("Added");
+    showToast(msg);
     fetchTodos();
     setShowForm(false);
     setTodo(EMPTY_TODO);
