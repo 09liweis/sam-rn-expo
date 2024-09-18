@@ -83,15 +83,6 @@ const TodoListPage = () => {
     setShowForm(true);
   };
 
-  const handleTodoDelete = async (todoId: string) => {
-    const response = await fetchData({
-      url: `${TODO_API}/${todoId}`,
-      method: "DELETE",
-    });
-    showToast("Deleted");
-    fetchTodos();
-  };
-
   useEffect(() => {
     fetchTodoLists();
   }, []);

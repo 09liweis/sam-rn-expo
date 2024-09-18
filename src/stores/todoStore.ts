@@ -1,6 +1,6 @@
-import { TODO_LIST_API } from "src/constant/api";
+import { TODO_API, TODO_LIST_API } from "src/constant/api";
 import { TodoStore,TodoListsResponse, TodoList, TodosResponse } from "src/types/todoType";
-import { fetchData } from "src/utils";
+import { fetchData, showToast } from "src/utils";
 import { create } from "zustand";
 
 const useTodoStore = create<TodoStore>()((set,get) => ({
@@ -22,6 +22,14 @@ const useTodoStore = create<TodoStore>()((set,get) => ({
     if (!todoListId) return;
     const {todos}:TodosResponse = await fetchData({ url: `${TODO_LIST_API}/${todoListId}` });
     set({todos})
+  },
+  deleteTodo:async(todoId:string) => {
+    const response = await fetchData({
+      url: `${TODO_API}/${todoId}`,
+      method: "DELETE",
+    });
+    showToast("Deleted");
+    get().fetchTodos();
   }
 }));
 export default useTodoStore;
