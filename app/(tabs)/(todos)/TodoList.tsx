@@ -16,7 +16,7 @@ import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const { fetchTodoLists, todoLists, setCurTodoList, todos, fetchTodos } =
+  const { fetchTodoLists, todoLists, setCurTodoList, todos, fetchTodos, upsertTodo } =
     useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
@@ -65,14 +65,10 @@ const TodoListPage = () => {
 
   const handleTodoUpsert = async () => {
     const { _id } = todo;
-    const method = _id ? "PUT" : "POST";
     todo.todoList = todoList._id;
-    const { todo: newTodo, msg } = await fetchData({
-      url: `${TODO_API}/${_id || ""}`,
-      method,
-      body: todo,
-    });
-    showToast(msg);
+    const response = await upsertTodo(todo);
+    
+    showToast(response.msg);
     fetchTodos();
     setShowForm(false);
     setTodo(EMPTY_TODO);

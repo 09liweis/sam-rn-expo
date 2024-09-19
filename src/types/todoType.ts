@@ -36,4 +36,5 @@ export type TodoStore = {
   setCurTodoList: (todoList: TodoList) => void;
   todos:Todo[],
   fetchTodos: () => void;
+  upsertTodo: (todo: Todo) => Promise<Todo>;
 };
