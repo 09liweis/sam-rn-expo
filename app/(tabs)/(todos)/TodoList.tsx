@@ -1,4 +1,5 @@
 import TodoCardList from "components/todo/TodoCardList";
+import TodoForm from "components/todo/TodoForm";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -10,14 +11,20 @@ import {
   TextInput,
 } from "react-native";
 import { PLACE_SEARCH_API, TODO_API, TODO_LIST_API } from "src/constant/api";
-import useDebounce from "src/hooks/useDebounce";
+
 import useTodoStore from "src/stores/todoStore";
 import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const { fetchTodoLists, todoLists, setCurTodoList, todos, fetchTodos, upsertTodo } =
-    useTodoStore();
+  const {
+    fetchTodoLists,
+    todoLists,
+    setCurTodoList,
+    todos,
+    fetchTodos,
+    upsertTodo,
+  } = useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
   const handleTodoListUpsert = async () => {
@@ -35,44 +42,6 @@ const TodoListPage = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [todo, setTodo] = useState<Todo>(EMPTY_TODO);
-  const [searchText, setSearchText] = useState("");
-  const [searchLocations, setSearchLocations] = useState<Loc[]>([]);
-  const debounce = useDebounce(searchText, 1000);
-
-  useEffect(() => {
-    searchLocation(searchText);
-  }, [debounce]);
-
-  const searchLocation = async (location: string) => {
-    if (!location) return;
-    const response = await fetchData({ url: `${PLACE_SEARCH_API}${location}` });
-    const { features } = response;
-    if (!features) return;
-    const locations: Loc[] = [];
-    console.log(features);
-    features.map((feature: any) => {
-      const {
-        properties: { coordinates, name },
-      } = feature;
-      locations.push({
-        addr: name,
-        lat: coordinates.latitude,
-        lng: coordinates.longitude,
-      });
-    });
-    setSearchLocations(locations);
-  };
-
-  const handleTodoUpsert = async () => {
-    const { _id } = todo;
-    todo.todoList = todoList._id;
-    const response = await upsertTodo(todo);
-    
-    showToast(response.msg);
-    fetchTodos();
-    setShowForm(false);
-    setTodo(EMPTY_TODO);
-  };
 
   const handleTodoPress = (todo: any) => {
     setTodo(todo);
@@ -93,13 +62,16 @@ const TodoListPage = () => {
         <Pressable onPress={handleTodoListUpsert}>
           <Text>Add New TodoList</Text>
         </Pressable>
-        {todoLists.map(({ _id, name }) => (
+        {todoLists.map((tl) => (
           <Pressable
-            onPress={() => setCurTodoList({ _id, name })}
+            onPress={() => {
+              setTodoList(tl);
+              setCurTodoList(tl);
+            }}
             style={todoStyles.todoListItem}
-            key={_id}
+            key={tl._id}
           >
-            <Text>{name}</Text>
+            <Text>{tl.name}</Text>
           </Pressable>
         ))}
       </View>
@@ -114,47 +86,12 @@ const TodoListPage = () => {
       </Pressable>
 
       {showForm && (
-        <View style={todoStyles.todoFormContainer}>
-          <View style={todoStyles.todoForm}>
-            <TextInput
-              value={todo.name || ""}
-              placeholder="name"
-              style={todoStyles.todoFormInput}
-              onChangeText={(text) => setTodo({ ...todo, name: text })}
-            />
-            <TextInput
-              value={todo.date || ""}
-              placeholder="date"
-              style={todoStyles.todoFormInput}
-              onChangeText={(text) => setTodo({ ...todo, date: text })}
-            />
-            <TextInput
-              placeholder="search location"
-              style={todoStyles.todoFormInput}
-              onChangeText={(text) => setSearchText(text)}
-            />
-            {searchLocations.map((loc) => (
-              <Pressable
-                key={loc.addr}
-                onPress={() => setTodo({ ...todo, loc })}
-              >
-                <Text>{loc.addr}</Text>
-              </Pressable>
-            ))}
-            <Pressable
-              style={todoStyles.todoFormBtn}
-              onPress={handleTodoUpsert}
-            >
-              <Text>Add</Text>
-            </Pressable>
-            <Pressable
-              style={todoStyles.todoFormBtn}
-              onPress={() => setShowForm(false)}
-            >
-              <Text>Cancel</Text>
-            </Pressable>
-          </View>
-        </View>
+        <TodoForm
+          todo={todo}
+          setTodo={setTodo}
+          todoList={todoList}
+          setShowForm={setShowForm}
+        />
       )}
     </View>
   );
