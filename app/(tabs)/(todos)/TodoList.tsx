@@ -1,5 +1,6 @@
 import TodoCardList from "components/todo/TodoCardList";
 import TodoForm from "components/todo/TodoForm";
+import TodoLists from "components/todo/TodoLists";
 import { useEffect, useState } from "react";
 import {
   View,
@@ -10,73 +11,20 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { PLACE_SEARCH_API, TODO_API, TODO_LIST_API } from "src/constant/api";
-
 import useTodoStore from "src/stores/todoStore";
-import { EMPTY_TODO, Loc, Todo } from "src/types/todoType";
-import { fetchData, showToast } from "src/utils";
 
 const TodoListPage = () => {
-  const {
-    fetchTodoLists,
-    todoLists,
-    setCurTodoList,
-    todos,
-    fetchTodos,
-    upsertTodo,
-  } = useTodoStore();
+
+  const {showForm, setShowForm} = useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
-  const handleTodoListUpsert = async () => {
-    const { _id } = todoList;
-    const method = _id ? "PUT" : "POST";
-    const {} = await fetchData({
-      url: `${TODO_LIST_API}/${_id || ""}`,
-      method,
-      body: todoList,
-    });
-    setTodoList(todoList);
-    showToast("Todo List Created");
-    fetchTodoLists();
-  };
-
-  const [showForm, setShowForm] = useState(false);
-  const [todo, setTodo] = useState<Todo>(EMPTY_TODO);
-
-  const handleTodoPress = (todo: any) => {
-    setTodo(todo);
-    setShowForm(true);
-  };
-
-  useEffect(() => {
-    fetchTodoLists();
-  }, []);
 
   return (
     <View style={todoStyles.todoPageContainer}>
-      <View>
-        <TextInput
-          value={todoList?.name || ""}
-          onChangeText={(text) => setTodoList({ ...todoList, name: text })}
-        />
-        <Pressable onPress={handleTodoListUpsert}>
-          <Text>Add New TodoList</Text>
-        </Pressable>
-        {todoLists.map((tl) => (
-          <Pressable
-            onPress={() => {
-              setTodoList(tl);
-              setCurTodoList(tl);
-            }}
-            style={todoStyles.todoListItem}
-            key={tl._id}
-          >
-            <Text>{tl.name}</Text>
-          </Pressable>
-        ))}
-      </View>
 
-      <TodoCardList todos={todos} handleTodoPress={handleTodoPress} />
+      <TodoLists />
+
+      <TodoCardList />
 
       <Pressable
         onPress={() => setShowForm(true)}
@@ -87,10 +35,7 @@ const TodoListPage = () => {
 
       {showForm && (
         <TodoForm
-          todo={todo}
-          setTodo={setTodo}
           todoList={todoList}
-          setShowForm={setShowForm}
         />
       )}
     </View>

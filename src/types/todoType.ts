@@ -21,6 +21,8 @@ export interface TodoList {
   items?: Todo[];
 }
 
+export const EMPTY_TODO_LIST = { name: "" };
+
 export interface TodoListsResponse {
   todoLists: TodoList[];
 }
@@ -30,11 +32,15 @@ export interface TodosResponse {
 }
 
 export type TodoStore = {
+  showForm: boolean;
+  setShowForm: (showForm: boolean) => void;
   todoLists: Array<TodoList>;
   fetchTodoLists: () => void;
   curTodoList?: TodoList;
   setCurTodoList: (todoList: TodoList) => void;
-  todos:Todo[],
+  curTodo: Todo;
+  setCurTodo: (todo: Todo) => void;
+  todos: Todo[];
   fetchTodos: () => void;
   upsertTodo: (todo: Todo) => Promise<Todo>;
 };

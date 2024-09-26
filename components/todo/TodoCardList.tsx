@@ -1,16 +1,23 @@
 import { FlatList, ScrollView, StyleSheet } from "react-native";
 import { Todo } from "src/types/todoType";
 import TodoCard from "./TodoCard";
+import useTodoStore from "src/stores/todoStore";
 
+export default function TodoCardList() {
+  const { todos, setCurTodo, setShowForm } = useTodoStore();
 
-export default function TodoCardList({ todos, handleTodoPress }: { todos: Todo[]; handleTodoPress: (todo: Todo) => void }) {
-  
   const renderTodo = ({ item }: any) => {
     return (
-      <TodoCard todo={item} handleTodoPress={()=>handleTodoPress(item)} />
+      <TodoCard
+        todo={item}
+        handleTodoPress={() => {
+          setCurTodo(item);
+          setShowForm(true);
+        }}
+      />
     );
   };
-  
+
   return (
     <ScrollView>
       <FlatList
@@ -27,5 +34,5 @@ const todoStyles = StyleSheet.create({
     padding: 10,
     flex: 1,
     gap: 10,
-  }
+  },
 });

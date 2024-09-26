@@ -15,18 +15,14 @@ import { fetchData, showToast } from "src/utils";
 import useTodoStore from "src/stores/todoStore";
 
 interface TodoFormProps {
-  todo: Todo;
   todoList: TodoList;
-  setTodo: (todo: Todo) => void;
-  setShowForm: (showForm: boolean) => void;
 }
 
-export default function TodoForm({ todo, setTodo, todoList, setShowForm }:TodoFormProps) {
+export default function TodoForm({ todoList }:TodoFormProps) {
   const {
-    fetchTodoLists,
-    todoLists,
-    setCurTodoList,
-    todos,
+    curTodo,
+    setCurTodo,
+    setShowForm,
     fetchTodos,
     upsertTodo,
   } = useTodoStore();
@@ -60,29 +56,29 @@ export default function TodoForm({ todo, setTodo, todoList, setShowForm }:TodoFo
   };
 
   const handleTodoUpsert = async () => {
-    todo.todoList = todoList._id;
-    const response = await upsertTodo(todo);
+    curTodo.todoList = todoList._id;
+    const response = await upsertTodo(curTodo);
 
     showToast(response.msg);
     fetchTodos();
     setShowForm(false);
-    setTodo(EMPTY_TODO);
+    setCurTodo(EMPTY_TODO);
   };
 
   return (
     <View style={todoStyles.todoFormContainer}>
       <View style={todoStyles.todoForm}>
         <TextInput
-          value={todo.name || ""}
+          value={curTodo?.name || ""}
           placeholder="name"
           style={todoStyles.todoFormInput}
-          onChangeText={(text) => setTodo({ ...todo, name: text })}
+          onChangeText={(text) => setCurTodo({ ...curTodo, name: text })}
         />
         <TextInput
-          value={todo.date || ""}
+          value={curTodo?.date || ""}
           placeholder="date"
           style={todoStyles.todoFormInput}
-          onChangeText={(text) => setTodo({ ...todo, date: text })}
+          onChangeText={(text) => setCurTodo({ ...curTodo, date: text })}
         />
         <TextInput
           placeholder="search location"
@@ -90,7 +86,7 @@ export default function TodoForm({ todo, setTodo, todoList, setShowForm }:TodoFo
           onChangeText={(text) => setSearchText(text)}
         />
         {searchLocations.map((loc) => (
-          <Pressable key={loc.addr} onPress={() => setTodo({ ...todo, loc })}>
+          <Pressable key={loc.addr} onPress={() => setCurTodo({ ...curTodo, loc })}>
             <Text>{loc.addr}</Text>
           </Pressable>
         ))}

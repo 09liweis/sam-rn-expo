@@ -1,27 +1,50 @@
 import { TODO_API, TODO_LIST_API } from "src/constant/api";
-import { TodoStore,TodoListsResponse, TodoList, TodosResponse, Todo } from "src/types/todoType";
+import {
+  TodoStore,
+  TodoListsResponse,
+  TodoList,
+  TodosResponse,
+  Todo,
+  EMPTY_TODO,
+  EMPTY_TODO_LIST,
+} from "src/types/todoType";
 import { fetchData, showToast } from "src/utils";
 import { create } from "zustand";
 
-const useTodoStore = create<TodoStore>()((set,get) => ({
-  todoLists:[],
-  curTodoList:{name:''},
-  setCurTodoList:(todoList:TodoList)=>{
-    set({curTodoList:todoList})
-    get().fetchTodos();
-  },
-  
-  fetchTodoLists: async () => {
-    const response:TodoListsResponse = await fetchData({ url: TODO_LIST_API });
-    set({todoLists:response.todoLists});
+const useTodoStore = create<TodoStore>()((set, get) => ({
+  showForm: false,
+  setShowForm: (showForm: boolean) => {
+    if (!showForm) {
+      set({ curTodo: EMPTY_TODO });
+    }
+    set({ showForm });
   },
 
-  todos:[],
-  fetchTodos:async()=> {
+  todoLists: [],
+  curTodoList: EMPTY_TODO_LIST,
+  curTodo: EMPTY_TODO,
+  setCurTodoList: (todoList: TodoList) => {
+    set({ curTodoList: todoList });
+    get().fetchTodos();
+  },
+
+  fetchTodoLists: async () => {
+    const response: TodoListsResponse = await fetchData({ url: TODO_LIST_API });
+    set({ todoLists: response.todoLists });
+  },
+
+  todos: [],
+  fetchTodos: async () => {
     const todoListId = get().curTodoList?._id;
     if (!todoListId) return;
-    const {todos}:TodosResponse = await fetchData({ url: `${TODO_LIST_API}/${todoListId}` });
-    set({todos})
+    const { todos }: TodosResponse = await fetchData({
+      url: `${TODO_LIST_API}/${todoListId}`,
+    });
+    set({ todos });
+  },
+
+  setCurTodo: (todo: Todo) => {
+    set({ curTodo: todo });
   },
 
   upsertTodo: async (todo: Todo) => {
@@ -33,14 +56,14 @@ const useTodoStore = create<TodoStore>()((set,get) => ({
       body: todo,
     });
   },
-  
-  deleteTodo:async(todoId:string) => {
+
+  deleteTodo: async (todoId: string) => {
     const response = await fetchData({
       url: `${TODO_API}/${todoId}`,
       method: "DELETE",
     });
     showToast("Deleted");
     get().fetchTodos();
-  }
+  },
 }));
 export default useTodoStore;
