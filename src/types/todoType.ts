@@ -43,4 +43,5 @@ export type TodoStore = {
   todos: Todo[];
   fetchTodos: () => void;
   upsertTodo: (todo: Todo) => Promise<Todo>;
+  deleteTodo: (todoId: string) => void;
 };

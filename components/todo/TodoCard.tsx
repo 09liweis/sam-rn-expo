@@ -1,4 +1,5 @@
 import { Pressable, StyleSheet, Text } from "react-native";
+import useTodoStore from "src/stores/todoStore";
 import { Todo } from "src/types/todoType";
 
 interface TodoCardProps {
@@ -6,10 +7,12 @@ interface TodoCardProps {
   handleTodoPress: () => void;
 }
 
-export default function TodoCard({ todo, handleTodoPress }:TodoCardProps) {
-  const {_id,name,date,status,todoList,loc} = todo;
+export default function TodoCard({ todo, handleTodoPress }: TodoCardProps) {
+  const { deleteTodo } = useTodoStore();
+  const { _id, name, date, status, todoList, loc } = todo;
   return (
     <Pressable
+      onLongPress={() => deleteTodo(_id || "")}
       onPress={handleTodoPress}
       style={todoStyles.todoItem}
       key={_id}
@@ -17,7 +20,7 @@ export default function TodoCard({ todo, handleTodoPress }:TodoCardProps) {
       <Text style={todoStyles.todoName}>{name}</Text>
       <Text style={todoStyles.todoDate}>{date}</Text>
     </Pressable>
-  )
+  );
 }
 
 const todoStyles = StyleSheet.create({
@@ -33,4 +36,4 @@ const todoStyles = StyleSheet.create({
   todoDate: {
     color: "#ccc",
   },
-})
+});
