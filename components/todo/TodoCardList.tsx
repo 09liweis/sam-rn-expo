@@ -1,4 +1,4 @@
-import { FlatList, ScrollView, StyleSheet } from "react-native";
+import { Animated, FlatList, ScrollView, StyleSheet } from "react-native";
 import { Todo } from "src/types/todoType";
 import TodoCard from "./TodoCard";
 import useTodoStore from "src/stores/todoStore";
@@ -20,7 +20,7 @@ export default function TodoCardList() {
 
   return (
     <ScrollView>
-      <FlatList
+      <Animated.FlatList
         data={todos}
         renderItem={renderTodo}
         contentContainerStyle={todoStyles.todoList}
