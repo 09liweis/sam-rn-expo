@@ -24,6 +24,7 @@ export default function TodoCardList() {
         data={todos}
         renderItem={renderTodo}
         contentContainerStyle={todoStyles.todoList}
+        keyboardDismissMode="on-drag"
       />
     </ScrollView>
   );
