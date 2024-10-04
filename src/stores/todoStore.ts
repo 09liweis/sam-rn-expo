@@ -30,7 +30,9 @@ const useTodoStore = create<TodoStore>()((set, get) => ({
 
   fetchTodoLists: async () => {
     const response: TodoListsResponse = await fetchData({ url: TODO_LIST_API });
-    set({ todoLists: response.todoLists });
+    if (response.todoLists) {
+      set({ todoLists: response.todoLists });
+    }
   },
 
   todos: [],
