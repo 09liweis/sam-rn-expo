@@ -5,14 +5,7 @@ import useTodoStore from "src/stores/todoStore";
 import { fetchData, showToast } from "src/utils";
 
 export default function TodoLists() {
-  const {
-    fetchTodoLists,
-    todoLists,
-    setCurTodoList,
-    todos,
-    fetchTodos,
-    upsertTodo,
-  } = useTodoStore();
+  const { fetchTodoLists, todoLists, setCurTodoList } = useTodoStore();
 
   useEffect(() => {
     fetchTodoLists();
