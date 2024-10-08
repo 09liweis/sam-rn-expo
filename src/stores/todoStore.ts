@@ -60,11 +60,14 @@ const useTodoStore = create<TodoStore>()((set, get) => ({
   },
 
   deleteTodo: async (todoId: string) => {
-    const response = await fetchData({
+    const { msg, err } = await fetchData({
       url: `${TODO_API}/${todoId}`,
       method: "DELETE",
     });
-    showToast("Deleted");
+    showToast(msg || err);
+    if (err) {
+      return;
+    }
     get().fetchTodos();
   },
 }));
