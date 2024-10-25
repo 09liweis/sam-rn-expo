@@ -4,12 +4,13 @@ export type User = {
 };
 
 export type LoginResponse = {
-  token:string;
-  msg:string;
+  token: string;
+  msg: string;
+  err: string;
 };
 
 export type UserStore = {
   curUser?: User;
-  login:({eml,pwd}:any)=>Promise<LoginResponse>;
+  login: ({ eml, pwd }: any) => Promise<LoginResponse>;
   // fetchUserDetail: () => Promise<User>;
 };
