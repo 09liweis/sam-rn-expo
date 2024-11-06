@@ -26,7 +26,7 @@ const Price = ({ price }: { price: string }) => (
 );
 
 export default function CategoryItem({ categoryItem }: CategoryItemProps) {
-  const { category, total, items,percentage } = categoryItem;
+  const { category, total, items, percentage } = categoryItem;
   return (
     <View
       style={{
@@ -41,7 +41,7 @@ export default function CategoryItem({ categoryItem }: CategoryItemProps) {
         <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
           {ICON_MAPS[category]}
           <Text style={{ textTransform: "capitalize" }}>{category}</Text>
-          <Text style={{color:MD2Colors.red400}}>{percentage.toFixed(2)}%</Text>
+          <Text style={{ color: MD2Colors.red400 }}>{percentage}</Text>
         </View>
         <Price price={total} />
       </View>
