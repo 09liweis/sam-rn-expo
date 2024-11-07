@@ -16,7 +16,7 @@ export type CategoryItemProps = {
 };
 
 export type Expense = {
-  id: string;
+  _id: string;
   price: string;
   date: string;
   category: string;

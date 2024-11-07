@@ -45,8 +45,8 @@ export default function CategoryItem({ categoryItem }: CategoryItemProps) {
         </View>
         <Price price={total} />
       </View>
-      {items.map(({ id, date, price, place }: Expense) => (
-        <View key={id} style={styles.expenseItem}>
+      {items.map(({ _id, date, price, place }: Expense) => (
+        <View key={_id} style={styles.expenseItem}>
           <Text>{date}</Text>
           <Price price={price} />
         </View>
