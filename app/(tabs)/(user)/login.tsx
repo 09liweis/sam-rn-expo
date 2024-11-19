@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import useUserStore from "src/stores/userStore";
 import { showToast } from "src/utils";
 import { router } from "expo-router";
+import useTodoStore from "src/stores/todoStore";
 
 const LoginPage = () => {
   const { login, curUser } = useUserStore();
+  const { fetchTodoLists } = useTodoStore();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,6 +18,7 @@ const LoginPage = () => {
       showToast(err);
     } else {
       showToast(msg);
+      fetchTodoLists();
       router.push("/TodoList");
     }
   };
