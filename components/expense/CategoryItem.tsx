@@ -22,35 +22,26 @@ const ICON_MAPS: { [key: string]: any } = {
 };
 
 const Price = ({ price }: { price: string }) => (
-  <Text style={{ color: "red", fontWeight: "bold" }}>{price}</Text>
+  <Text style={styles.price}>${price}</Text>
 );
 
 export default function CategoryItem({ categoryItem }: CategoryItemProps) {
   const { category, total, items, percentage } = categoryItem;
   return (
-    <View
-      style={{
-        borderWidth: 2,
-        borderRadius: 10,
-        borderColor: MD2Colors.red700,
-        marginTop: 10,
-      }}
-      key={category}
-    >
-      <View style={styles.categoryTotal}>
-        <View style={{ flexDirection: "row", gap: 5, alignItems: "center" }}>
-          {ICON_MAPS[category]}
-          <Text style={{ textTransform: "capitalize" }}>{category}</Text>
-          <Text style={{ color: MD2Colors.red400 }}>{percentage}</Text>
+    <View style={styles.expenseItem}>
+      <View style={styles.leftContent}>
+        <View style={styles.iconContainer}>
+          {ICON_MAPS[category] || <AntDesign name="questioncircleo" size={24} color="#666" />}
         </View>
-        <Price price={total} />
+        <View style={styles.categoryInfo}>
+          <Text style={styles.categoryName}>{category}</Text>
+          <Text style={styles.itemCount}>{items.length} items</Text>
+        </View>
       </View>
-      {items.map(({ _id, date, price, place }: Expense) => (
-        <View key={_id} style={styles.expenseItem}>
-          <Text>{date}</Text>
-          <Price price={price} />
-        </View>
-      ))}
+      <View style={styles.rightContent}>
+        <Price price={total} />
+        <Text style={styles.percentage}>{percentage}%</Text>
+      </View>
     </View>
   );
 }
@@ -60,14 +51,59 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 5,
+    backgroundColor: '#ffffff',
+    padding: 16,
+    marginHorizontal: 16,
+    marginVertical: 8,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
-  categoryTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: 5,
-    borderBottomWidth: 2,
-    borderColor: MD2Colors.red700,
+  leftContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  categoryInfo: {
+    flex: 1,
+  },
+  categoryName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    textTransform: 'capitalize',
+  },
+  itemCount: {
+    fontSize: 14,
+    color: '#666666',
+    marginTop: 2,
+  },
+  rightContent: {
+    alignItems: 'flex-end',
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#e32f45',
+    marginBottom: 2,
+  },
+  percentage: {
+    fontSize: 14,
+    color: '#666666',
   },
 });

@@ -37,31 +37,117 @@ export default function App() {
   }, []);
   return (
     <PageScreenContainer>
-      <>
-      <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
-        <Text>Total Expenses</Text>
-        <Text style={{ color: "red", fontWeight: "bold" }}>{totals}</Text>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.totalLabel}>Total Expenses</Text>
+          <Text style={styles.totalAmount}>${totals}</Text>
+          <View style={styles.viewToggle}>
+            <Pressable
+              style={[styles.toggleButton, view === 'list' && styles.activeToggle]}
+              onPress={() => setView('list')}
+            >
+              <Text style={[styles.toggleText, view === 'list' && styles.activeToggleText]}>List</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.toggleButton, view === 'chart' && styles.activeToggle]}
+              onPress={() => setView('chart')}
+            >
+              <Text style={[styles.toggleText, view === 'chart' && styles.activeToggleText]}>Chart</Text>
+            </Pressable>
+          </View>
+        </View>
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={MD2Colors.blue500} />
+          </View>
+        ) : view === "list" ? (
+          <FlatList
+            data={expenses}
+            renderItem={renderExpenses}
+            keyExtractor={(item) => item.category}
+            style={styles.list}
+            showsVerticalScrollIndicator={false}
+          />
+        ) : (
+          <Chart data={expenses} />
+        )}
       </View>
-      <View style={{ justifyContent: "space-between", flexDirection: "row" }}>
-        <Pressable onPress={() => setView("list")}>
-          <Text>View</Text>
-        </Pressable>
-        <Pressable onPress={() => setView("chart")}>
-          <Text>Chart</Text>
-        </Pressable>
-      </View>
-      {view === "list" ? (
-        <FlatList data={expenses} renderItem={renderExpenses} />
-      ) : (
-        <Chart totals={totals} expenses={expenses} />
-      )}
-      </>
     </PageScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  expensesContainer: {
-    width: "100%",
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    backgroundColor: '#ffffff',
+    padding: 24,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+    marginBottom: 16,
+  },
+  totalLabel: {
+    fontSize: 16,
+    color: '#666666',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  totalAmount: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  viewToggle: {
+    flexDirection: 'row',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    padding: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+  },
+  activeToggle: {
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  toggleText: {
+    textAlign: 'center',
+    fontSize: 14,
+    color: '#666666',
+  },
+  activeToggleText: {
+    color: '#1a1a1a',
+    fontWeight: '600',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  list: {
+    flex: 1,
   },
 });
