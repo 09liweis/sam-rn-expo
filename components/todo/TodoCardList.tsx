@@ -19,21 +19,24 @@ export default function TodoCardList() {
   };
 
   return (
-    <ScrollView>
+    <ScrollView style={todoStyles.container}>
       <Animated.FlatList
         data={todos}
         renderItem={renderTodo}
         contentContainerStyle={todoStyles.todoList}
         keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
       />
     </ScrollView>
   );
 }
 
 const todoStyles = StyleSheet.create({
-  todoList: {
-    padding: 10,
+  container: {
     flex: 1,
-    gap: 10,
+    backgroundColor: '#f5f5f5',
+  },
+  todoList: {
+    paddingVertical: 16,
   },
 });
