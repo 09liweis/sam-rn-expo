@@ -9,6 +9,8 @@ export default function MovieList({ movies }) {
         data={movies}
         renderItem={({ item }) => <MovieCard movie={item} />}
         keyExtractor={(item) => item.title}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
       />
     </SafeAreaView>
   );
@@ -17,6 +19,9 @@ export default function MovieList({ movies }) {
 const styles = StyleSheet.create({
   listArea: {
     flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
+    backgroundColor: '#f5f5f5',
+  },
+  listContent: {
+    paddingVertical: 8,
   },
 });

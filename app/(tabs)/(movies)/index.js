@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import MovieList from "components/MovieList";
 
 export default function App() {
@@ -35,9 +35,14 @@ export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar />
-      <Text style={styles.text}>{title}</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>{title}</Text>
+      </View>
+      
       {loading ? (
-        <ActivityIndicator animating={true} size={"medium"} />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#ff9800" />
+        </View>
       ) : (
         <MovieList movies={movies} />
       )}
@@ -47,19 +52,32 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
-    margin: "auto",
-    maxWidth: "425px",
-    padding: 10,
     flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
+    backgroundColor: '#f5f5f5',
   },
-  text: {
-    color: "tomato",
-    textTransform: "Capitalize",
+  header: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  title: {
     fontSize: 24,
-    textAlign: "center",
-    marginTop: 10,
-    marginBottom: 10,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
