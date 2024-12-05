@@ -10,6 +10,13 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="profile"
+        options={{
+          // Hide the header for all other routes.
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
