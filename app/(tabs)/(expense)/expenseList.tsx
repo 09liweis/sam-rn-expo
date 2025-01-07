@@ -40,7 +40,7 @@ export default function App() {
       <View style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.totalLabel}>Total Expenses</Text>
-          <Text style={styles.totalAmount}>${totals}</Text>
+          <Text style={styles.totalAmount}>{totals}</Text>
           <View style={styles.viewToggle}>
             <Pressable
               style={[styles.toggleButton, view === 'list' && styles.activeToggle]}
