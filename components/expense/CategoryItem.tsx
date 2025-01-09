@@ -22,7 +22,7 @@ const ICON_MAPS: { [key: string]: any } = {
 };
 
 const Price = ({ price }: { price: string }) => (
-  <Text style={styles.price}>${price}</Text>
+  <Text style={styles.price}>{price}</Text>
 );
 
 export default function CategoryItem({ categoryItem }: CategoryItemProps) {

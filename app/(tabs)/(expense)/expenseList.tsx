@@ -41,37 +41,21 @@ export default function App() {
         <View style={styles.header}>
           <Text style={styles.totalLabel}>Total Expenses</Text>
           <Text style={styles.totalAmount}>{totals}</Text>
-          <View style={styles.viewToggle}>
-            <Pressable
-              style={[styles.toggleButton, view === 'list' && styles.activeToggle]}
-              onPress={() => setView('list')}
-            >
-              <Text style={[styles.toggleText, view === 'list' && styles.activeToggleText]}>List</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.toggleButton, view === 'chart' && styles.activeToggle]}
-              onPress={() => setView('chart')}
-            >
-              <Text style={[styles.toggleText, view === 'chart' && styles.activeToggleText]}>Chart</Text>
-            </Pressable>
-          </View>
+
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={MD2Colors.blue500} />
           </View>
-        ) : view === "list" ? (
-          <FlatList
-            data={expenses}
-            renderItem={renderExpenses}
-            keyExtractor={(item) => item.category}
-            style={styles.list}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : (
-          <Chart data={expenses} />
-        )}
+        ) : 
+        <FlatList
+          data={expenses}
+          renderItem={renderExpenses}
+          keyExtractor={(item) => item.category}
+          style={styles.list}
+          showsVerticalScrollIndicator={false}
+        />}
       </View>
     </PageScreenContainer>
   );
