@@ -40,7 +40,7 @@ export default function CategoryItem({ categoryItem }: CategoryItemProps) {
       </View>
       <View style={styles.rightContent}>
         <Price price={total} />
-        <Text style={styles.percentage}>{percentage}%</Text>
+        <Text style={styles.percentage}>{percentage}</Text>
       </View>
     </View>
   );
