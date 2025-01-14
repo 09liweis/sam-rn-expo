@@ -52,7 +52,7 @@ export default function App() {
         <FlatList
           data={expenses}
           renderItem={renderExpenses}
-          keyExtractor={(item) => item.category}
+          // keyExtractor={(item) => item.category}
           style={styles.list}
           showsVerticalScrollIndicator={false}
         />}
