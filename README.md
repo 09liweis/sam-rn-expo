@@ -20,4 +20,5 @@ npx expo install --fix
 
 
 ## build android
+npm install --global expo-cli eas-cli
 eas build -p android --profile preview
