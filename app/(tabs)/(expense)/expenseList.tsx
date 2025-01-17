@@ -5,16 +5,15 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
-
-const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
 
 export default function App() {
   const getExpenses = async () => {
     setLoading(true);
 
     try {
-      const response = await fetchData({ url: URL, method: "POST" });
+      const response = await fetchData({ url: EXPENSES_STATISTICS_API, method: "POST" });
       setTotals(response.total);
       setExpenses(response.categoryPrice);
     } catch (error) {

@@ -8,4 +8,6 @@ export const LOGIN_API = `${BASE_URL}/api/user/login`;
 
 export const USER_API = `${BASE_URL}/api/user/detail`;
 
+export const EXPENSES_STATISTICS_API = `${BASE_URL}/api/transactions/statistics`;
+
 export const PLACE_SEARCH_API = `https://api.mapbox.com/search/searchbox/v1/forward?proximity=ip&access_token=${process.env.EXPO_PUBLIC_MAPBOX_APIKEY}&country=CA&q=`;
