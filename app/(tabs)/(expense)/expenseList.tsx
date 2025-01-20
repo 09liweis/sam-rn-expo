@@ -37,7 +37,7 @@ export default function App() {
   return (
     <PageScreenContainer>
       <View style={styles.container}>
-        <View style={styles.header}>
+        <View style={styles.expenseHeader}>
 
           <View>
             <Text>Expenses</Text>
@@ -65,7 +65,6 @@ export default function App() {
           data={expenses}
           renderItem={renderExpenses}
           // keyExtractor={(item) => item.category}
-          style={styles.list}
           showsVerticalScrollIndicator={false}
         />}
       </View>
@@ -78,12 +77,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
+  expenseHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#ffffff',
-    padding: 24,
+    padding: 16,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     shadowColor: '#000',
@@ -104,47 +103,10 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#1a1a1a',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  viewToggle: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 4,
-  },
-  toggleButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  activeToggle: {
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  toggleText: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#666666',
-  },
-  activeToggleText: {
-    color: '#1a1a1a',
-    fontWeight: '600',
+    textAlign: 'center'
   },
   loadingContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  list: {
-    flex: 1,
-  },
+  }
 });
