@@ -38,14 +38,21 @@ export default function App() {
     <PageScreenContainer>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.totalLabel}>Total Balances</Text>
-          <Text style={styles.totalAmount}>{totals.total}</Text>
 
-          <Text style={styles.totalLabel}>Total Expenses</Text>
-          <Text style={styles.totalAmount}>{totals.expenses}</Text>
+          <View>
+            <Text>Expenses</Text>
+            <Text>{totals.expenses}</Text>
+          </View>
 
-          <Text style={styles.totalLabel}>Total Income</Text>
-          <Text style={styles.totalAmount}>{totals.incomes}</Text>
+          <View>
+            <Text style={styles.totalLabel}>Total Balances</Text>
+            <Text style={styles.totalAmount}>{totals.total}</Text>
+          </View>
+
+          <View>
+            <Text>Incomes</Text>
+            <Text>{totals.incomes}</Text>
+          </View>
 
         </View>
 
@@ -72,6 +79,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
     padding: 24,
     borderBottomLeftRadius: 24,
@@ -88,11 +98,10 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 16,
     color: '#666666',
-    textAlign: 'center',
-    marginBottom: 8,
+    textAlign: 'center'
   },
   totalAmount: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
     color: '#1a1a1a',
     textAlign: 'center',
