@@ -13,9 +13,9 @@ export default function App() {
     setLoading(true);
 
     try {
-      const response = await fetchData({ url: EXPENSES_STATISTICS_API, method: "POST" });
-      setTotals(response.total);
-      setExpenses(response.categoryPrice);
+      const {total, incomes, expenses, categoryPrice} = await fetchData({ url: EXPENSES_STATISTICS_API, method: "POST" });
+      setTotals({total, incomes, expenses});
+      setExpenses(categoryPrice);
     } catch (error) {
       console.error(error);
     }
@@ -24,7 +24,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
-  const [totals, setTotals] = useState("");
+  const [totals, setTotals] = useState({total:'',incomes:'',expenses:''});
   const [view, setView] = useState("list");
 
   const renderExpenses = ({ item }: any) => (
@@ -38,8 +38,14 @@ export default function App() {
     <PageScreenContainer>
       <View style={styles.container}>
         <View style={styles.header}>
+          <Text style={styles.totalLabel}>Total Balances</Text>
+          <Text style={styles.totalAmount}>{totals.total}</Text>
+
           <Text style={styles.totalLabel}>Total Expenses</Text>
-          <Text style={styles.totalAmount}>{totals}</Text>
+          <Text style={styles.totalAmount}>{totals.expenses}</Text>
+
+          <Text style={styles.totalLabel}>Total Income</Text>
+          <Text style={styles.totalAmount}>{totals.incomes}</Text>
 
         </View>
 
