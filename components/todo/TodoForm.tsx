@@ -91,13 +91,13 @@ export default function TodoForm({ todoList }:TodoFormProps) {
           </Pressable>
         ))}
         <Pressable style={todoStyles.todoFormBtn} onPress={handleTodoUpsert}>
-          <Text>Add</Text>
+          <Text style={todoStyles.todoFormBtnText}>Add</Text>
         </Pressable>
         <Pressable
           style={todoStyles.todoFormBtn}
           onPress={() => setShowForm(false)}
         >
-          <Text>Cancel</Text>
+          <Text style={todoStyles.todoFormBtnText}>Cancel</Text>
         </Pressable>
       </View>
     </View>
@@ -123,15 +123,22 @@ const todoStyles = StyleSheet.create({
     gap: 10,
   },
   todoFormInput: {
-    padding: 10,
+    height: 40,
+    borderColor: '#ccc',
     borderWidth: 1,
-    borderRadius: 10,
+    borderRadius: 4,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    fontSize: 16,
   },
   todoFormBtn: {
-    color: "#fff",
     backgroundColor: "#369eff",
     padding: 10,
     textAlign: "center",
     borderRadius: 10,
   },
+  todoFormBtnText: {
+    color: "#fff",
+    textAlign: "center",
+  }
 });
