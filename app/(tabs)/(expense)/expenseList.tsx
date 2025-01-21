@@ -1,5 +1,4 @@
 import CategoryItem from "components/expense/CategoryItem";
-import { Chart } from "components/expense/Chart";
 import PageScreenContainer from "components/rental/ScreenContainer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -7,6 +6,9 @@ import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
+
+const INITIAL_BALANCE = '$0.00';
+const INITIAL_STATISTICS = {total:INITIAL_BALANCE,incomes:INITIAL_BALANCE,expenses:INITIAL_BALANCE};
 
 export default function App() {
   const getExpenses = async () => {
@@ -24,8 +26,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
-  const [totals, setTotals] = useState({total:'',incomes:'',expenses:''});
-  const [view, setView] = useState("list");
+  const [totals, setTotals] = useState(INITIAL_STATISTICS);
 
   const renderExpenses = ({ item }: any) => (
     <CategoryItem categoryItem={item} />
