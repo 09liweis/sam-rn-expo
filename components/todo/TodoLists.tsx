@@ -40,7 +40,7 @@ export default function TodoLists() {
             setTodoList(tl);
             setCurTodoList(tl);
           }}
-          style={todoStyles.todoListItem}
+          style={[todoStyles.todoListItem, { backgroundColor: tl._id === todoList._id ? "#ccc" : "#fff" }]}
           key={tl._id}
         >
           <Text>{tl.name}</Text>
