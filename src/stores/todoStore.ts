@@ -55,7 +55,7 @@ const useTodoStore = create<TodoStore>()((set, get) => ({
     return await fetchData({
       url: `${TODO_API}/${todoId || ""}`,
       method,
-      body: todo,
+      body: {...todo, todoList: get().curTodoList?._id},
     });
   },
 
