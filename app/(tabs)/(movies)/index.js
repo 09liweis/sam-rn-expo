@@ -5,6 +5,7 @@ import { ActivityIndicator } from "react-native-paper";
 import MovieList from "components/MovieList";
 import { fetchData, showToast } from "src/utils";
 import { MOVIES_API } from "src/constant/api";
+import MovieCategories from "components/movie/MovieCategories";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
@@ -31,6 +32,8 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
       </View>
+
+      <MovieCategories />
       
       {loading ? (
         <View style={styles.loadingContainer}>
