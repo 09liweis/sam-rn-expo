@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pressable, TextInput, View, Text, StyleSheet } from "react-native";
+import { Pressable, TextInput, View, Text, StyleSheet, ScrollView } from "react-native";
 import { TODO_LIST_API } from "src/constant/api";
 import useTodoStore from "src/stores/todoStore";
 import { fetchData, showToast } from "src/utils";
@@ -12,48 +12,84 @@ export default function TodoLists() {
   }, []);
 
   const [todoList, setTodoList] = useState<any>({});
+
   const handleTodoListUpsert = async () => {
     const { _id } = todoList;
     const method = _id ? "PUT" : "POST";
-    const {} = await fetchData({
+    await fetchData({
       url: `${TODO_LIST_API}/${_id || ""}`,
       method,
       body: todoList,
     });
-    setTodoList(todoList);
-    showToast("Todo List Created");
+    showToast(_id ? "Todo List Updated" : "Todo List Created");
     fetchTodoLists();
   };
 
   return (
-    <View>
+    <View style={styles.container}>
       <TextInput
+        style={styles.input}
         value={todoList?.name || ""}
         onChangeText={(text) => setTodoList({ ...todoList, name: text })}
+        placeholder="Enter new todo list name"
       />
-      <Pressable onPress={handleTodoListUpsert}>
-        <Text>Add New TodoList</Text>
+      <Pressable style={styles.button} onPress={handleTodoListUpsert}>
+        <Text style={styles.buttonText}>{todoList._id ? "Update" : "Add"} Todo List</Text>
       </Pressable>
-      {todoLists.map((tl) => (
-        <Pressable
-          onPress={() => {
-            setTodoList(tl);
-            setCurTodoList(tl);
-          }}
-          style={[todoStyles.todoListItem, { backgroundColor: tl._id === todoList._id ? "#ccc" : "#fff" }]}
-          key={tl._id}
-        >
-          <Text>{tl.name}</Text>
-        </Pressable>
-      ))}
+      <ScrollView style={styles.listContainer}>
+        {todoLists.map((tl) => (
+          <Pressable
+            key={tl._id}
+            onPress={() => {
+              setTodoList(tl);
+              setCurTodoList(tl);
+            }}
+            style={[
+              styles.todoListItem,
+              { backgroundColor: tl._id === todoList._id ? "#e0e0e0" : "#f9f9f9" },
+            ]}
+          >
+            <Text style={styles.todoListItemText}>{tl.name}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
     </View>
   );
 }
 
-const todoStyles = StyleSheet.create({
-  todoListItem: {
+const styles = StyleSheet.create({
+  container: {
     padding: 10,
+    backgroundColor: "#fff",
+  },
+  input: {
+    height: 50,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  buttonText: {
+    color: "#fff",
+    textAlign: "center",
+  },
+  listContainer: {
+    // flex: 1,
+  },
+  todoListItem: {
+    padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: "#eee",
+  },
+  todoListItemText: {
+    fontSize: 16,
   },
 });
