@@ -30,7 +30,7 @@ const TodoListPage = () => {
         onPress={() => setShowForm(true)}
         style={todoStyles.todoAddBtn}
       >
-        <Text>+</Text>
+        <Text style={todoStyles.todoAddBtnText}>+</Text>
       </Pressable>
 
       {showForm && (
@@ -70,28 +70,24 @@ const todoStyles = StyleSheet.create({
     width: "60%",
     gap: 10,
   },
-  todoFormInput: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 10,
-  },
-  todoFormBtn: {
-    color: "#fff",
-    backgroundColor: "#369eff",
-    padding: 10,
-    textAlign: "center",
-    borderRadius: 10,
-  },
   todoAddBtn: {
     color: "#fff",
-    fontSize: 24,
     position: "absolute",
     bottom: 10,
     right: 10,
-    padding: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 17,
+    paddingTop: 10,
     borderRadius: 100,
     backgroundColor: "#369eff",
+    justifyContent: 'center',
+    alignItems: 'center'
   },
+  todoAddBtnText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
+  }
 });
 
 export default TodoListPage;
