@@ -22,7 +22,7 @@ const ICON_MAPS: { [key: string]: any } = {
 };
 
 const Price = ({ price }: { price: string }) => (
-  <Text style={styles.price}>${price}</Text>
+  <Text style={styles.price}>{price}</Text>
 );
 
 export default function CategoryItem({ categoryItem }: CategoryItemProps) {
@@ -40,7 +40,7 @@ export default function CategoryItem({ categoryItem }: CategoryItemProps) {
       </View>
       <View style={styles.rightContent}>
         <Price price={total} />
-        <Text style={styles.percentage}>{percentage}%</Text>
+        <Text style={styles.percentage}>{percentage}</Text>
       </View>
     </View>
   );

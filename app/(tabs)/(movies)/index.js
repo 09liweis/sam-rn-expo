@@ -3,24 +3,18 @@ import { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import MovieList from "components/MovieList";
+import { fetchData, showToast } from "src/utils";
+import { MOVIES_API } from "src/constant/api";
+import MovieCategories from "components/movie/MovieCategories";
 
 export default function App() {
   const getMoviesFromApiAsync = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        "https://samliweisen.onrender.com/api/movies?imgserver=img9&limit=50",
-        {
-          headers: {
-            "Content-type": "application/json",
-          },
-        },
-      );
-      const json = await response.json();
-      setMovies(json.movies);
+      const moviesResponse = await fetchData({url: MOVIES_API});
+      setMovies(moviesResponse.movies);
     } catch (error) {
-      console.error(error);
-      setTitle(error.toString());
+      showToast(error.toString());
     }
     setLoading(false);
   };
@@ -38,6 +32,8 @@ export default function App() {
       <View style={styles.header}>
         <Text style={styles.title}>{title}</Text>
       </View>
+
+      <MovieCategories />
       
       {loading ? (
         <View style={styles.loadingContainer}>

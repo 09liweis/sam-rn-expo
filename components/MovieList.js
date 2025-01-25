@@ -8,7 +8,7 @@ export default function MovieList({ movies }) {
       <FlatList
         data={movies}
         renderItem={({ item }) => <MovieCard movie={item} />}
-        keyExtractor={(item) => item.title}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />

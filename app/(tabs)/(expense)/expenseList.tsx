@@ -1,22 +1,23 @@
 import CategoryItem from "components/expense/CategoryItem";
-import { Chart } from "components/expense/Chart";
 import PageScreenContainer from "components/rental/ScreenContainer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
 
-const URL = "https://samliweisen.onrender.com/api/transactions/statistics";
+const INITIAL_BALANCE = '$0.00';
+const INITIAL_STATISTICS = {total:INITIAL_BALANCE,incomes:INITIAL_BALANCE,expenses:INITIAL_BALANCE};
 
 export default function App() {
   const getExpenses = async () => {
     setLoading(true);
 
     try {
-      const response = await fetchData({ url: URL, method: "POST" });
-      setTotals(response.total);
-      setExpenses(response.categoryPrice);
+      const {total, incomes, expenses, categoryPrice} = await fetchData({ url: EXPENSES_STATISTICS_API, method: "POST" });
+      setTotals({total, incomes, expenses});
+      setExpenses(categoryPrice);
     } catch (error) {
       console.error(error);
     }
@@ -25,8 +26,7 @@ export default function App() {
 
   const [loading, setLoading] = useState(false);
   const [expenses, setExpenses] = useState([]);
-  const [totals, setTotals] = useState("");
-  const [view, setView] = useState("list");
+  const [totals, setTotals] = useState(INITIAL_STATISTICS);
 
   const renderExpenses = ({ item }: any) => (
     <CategoryItem categoryItem={item} />
@@ -38,40 +38,36 @@ export default function App() {
   return (
     <PageScreenContainer>
       <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.totalLabel}>Total Expenses</Text>
-          <Text style={styles.totalAmount}>${totals}</Text>
-          <View style={styles.viewToggle}>
-            <Pressable
-              style={[styles.toggleButton, view === 'list' && styles.activeToggle]}
-              onPress={() => setView('list')}
-            >
-              <Text style={[styles.toggleText, view === 'list' && styles.activeToggleText]}>List</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.toggleButton, view === 'chart' && styles.activeToggle]}
-              onPress={() => setView('chart')}
-            >
-              <Text style={[styles.toggleText, view === 'chart' && styles.activeToggleText]}>Chart</Text>
-            </Pressable>
+        <View style={styles.expenseHeader}>
+
+          <View>
+            <Text>Expenses</Text>
+            <Text>{totals.expenses}</Text>
           </View>
+
+          <View>
+            <Text style={styles.totalLabel}>Total Balances</Text>
+            <Text style={styles.totalAmount}>{totals.total}</Text>
+          </View>
+
+          <View>
+            <Text>Incomes</Text>
+            <Text>{totals.incomes}</Text>
+          </View>
+
         </View>
 
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={MD2Colors.blue500} />
           </View>
-        ) : view === "list" ? (
-          <FlatList
-            data={expenses}
-            renderItem={renderExpenses}
-            keyExtractor={(item) => item.category}
-            style={styles.list}
-            showsVerticalScrollIndicator={false}
-          />
-        ) : (
-          <Chart data={expenses} />
-        )}
+        ) : 
+        <FlatList
+          data={expenses}
+          renderItem={renderExpenses}
+          // keyExtractor={(item) => item.category}
+          showsVerticalScrollIndicator={false}
+        />}
       </View>
     </PageScreenContainer>
   );
@@ -82,9 +78,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  header: {
+  expenseHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
-    padding: 24,
+    padding: 16,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     shadowColor: '#000',
@@ -95,59 +94,20 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
-    marginBottom: 16,
   },
   totalLabel: {
     fontSize: 16,
     color: '#666666',
-    textAlign: 'center',
-    marginBottom: 8,
+    textAlign: 'center'
   },
   totalAmount: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '700',
     color: '#1a1a1a',
-    textAlign: 'center',
-    marginBottom: 16,
-  },
-  viewToggle: {
-    flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 12,
-    padding: 4,
-  },
-  toggleButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  activeToggle: {
-    backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  toggleText: {
-    textAlign: 'center',
-    fontSize: 14,
-    color: '#666666',
-  },
-  activeToggleText: {
-    color: '#1a1a1a',
-    fontWeight: '600',
+    textAlign: 'center'
   },
   loadingContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  list: {
-    flex: 1,
-  },
+  }
 });
