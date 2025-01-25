@@ -11,6 +11,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
+import { MotiView } from "moti";
 import useTodoStore from "src/stores/todoStore";
 
 const TodoListPage = () => {
@@ -20,11 +21,22 @@ const TodoListPage = () => {
   const [todoList, setTodoList] = useState<any>({});
 
   return (
-    <View style={todoStyles.todoPageContainer}>
-
+    <MotiView 
+      from={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'timing', duration: 500 }}
+      style={todoStyles.todoPageContainer}
+    >
       <TodoLists />
 
-      <TodoCardList />
+      <MotiView 
+        from={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: 'timing', duration: 500 }}
+        style={todoStyles.todoPageContainer}
+      >
+        <TodoCardList />
+      </MotiView>
 
       <Pressable
         onPress={() => setShowForm(true)}
@@ -34,11 +46,19 @@ const TodoListPage = () => {
       </Pressable>
 
       {showForm && (
-        <TodoForm
-          todoList={todoList}
-        />
+        <MotiView
+          from={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ type: 'timing', scale: { type: 'spring' }}}
+          style={todoStyles.todoFormContainer}
+        >
+          <TodoForm
+            todoList={todoList}
+          />
+        </MotiView>
       )}
-    </View>
+    </MotiView>
   );
 };
 
