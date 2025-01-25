@@ -3,25 +3,45 @@ import PageScreenContainer from "components/rental/ScreenContainer";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { FlatList, Pressable, StyleSheet, Text, View } from "react-native";
-import { ActivityIndicator, MD2Colors } from "react-native-paper";
+import { ActivityIndicator, MD2Colors, IconButton } from "react-native-paper";
 import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
+import { format } from 'date-fns';
 
 const INITIAL_BALANCE = '$0.00';
 const INITIAL_STATISTICS = {total:INITIAL_BALANCE,incomes:INITIAL_BALANCE,expenses:INITIAL_BALANCE};
 
 export default function App() {
-  const getExpenses = async () => {
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const getExpenses = async (date = selectedDate) => {
     setLoading(true);
 
     try {
-      const {total, incomes, expenses, categoryPrice} = await fetchData({ url: EXPENSES_STATISTICS_API, method: "POST" });
+      const monthYear = format(date, 'yyyy-MM');
+      const {total, incomes, expenses, categoryPrice} = await fetchData({ 
+        url: EXPENSES_STATISTICS_API, 
+        method: "POST",
+        body: { date: monthYear }
+      });
       setTotals({total, incomes, expenses});
       setExpenses(categoryPrice);
     } catch (error) {
       console.error(error);
     }
     setLoading(false);
+  };
+
+  const handlePreviousMonth = () => {
+    const newDate = new Date(selectedDate.setMonth(selectedDate.getMonth() - 1));
+    setSelectedDate(newDate);
+    getExpenses(newDate);
+  };
+
+  const handleNextMonth = () => {
+    const newDate = new Date(selectedDate.setMonth(selectedDate.getMonth() + 1));
+    setSelectedDate(newDate);
+    getExpenses(newDate);
   };
 
   const [loading, setLoading] = useState(false);
@@ -39,22 +59,38 @@ export default function App() {
     <PageScreenContainer>
       <View style={styles.container}>
         <View style={styles.expenseHeader}>
+          <View style={styles.balanceContainer}>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>Expenses</Text>
+              <Text style={styles.expenseAmount}>{totals.expenses}</Text>
+            </View>
 
-          <View>
-            <Text>Expenses</Text>
-            <Text>{totals.expenses}</Text>
+            <View style={styles.balanceItem}>
+              <Text style={styles.totalLabel}>Total Balance</Text>
+              <Text style={styles.totalAmount}>{totals.total}</Text>
+            </View>
+
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>Incomes</Text>
+              <Text style={styles.incomeAmount}>{totals.incomes}</Text>
+            </View>
           </View>
+        </View>
 
-          <View>
-            <Text style={styles.totalLabel}>Total Balances</Text>
-            <Text style={styles.totalAmount}>{totals.total}</Text>
-          </View>
-
-          <View>
-            <Text>Incomes</Text>
-            <Text>{totals.incomes}</Text>
-          </View>
-
+        <View style={styles.dateSelector}>
+          <IconButton
+            icon="chevron-left"
+            size={24}
+            onPress={handlePreviousMonth}
+          />
+          <Text style={styles.dateText}>
+            {format(selectedDate, 'MMMM yyyy')}
+          </Text>
+          <IconButton
+            icon="chevron-right"
+            size={24}
+            onPress={handleNextMonth}
+          />
         </View>
 
         {loading ? (
@@ -109,5 +145,39 @@ const styles = StyleSheet.create({
   loadingContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
+  dateSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dateText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginHorizontal: 8,
+  },
+  balanceContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  balanceItem: {
+    alignItems: 'center',
+  },
+  balanceLabel: {
+    fontSize: 14,
+    color: '#666666',
+    marginBottom: 4,
+  },
+  expenseAmount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#dc2626',
+  },
+  incomeAmount: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#16a34a',
+  },
 });
