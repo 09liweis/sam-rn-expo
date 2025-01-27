@@ -2,7 +2,7 @@ const BASE_URL = process.env.EXPO_PUBLIC_API_URL;
 
 export const TODO_API = `${BASE_URL}/api/todos`;
 
-export const TODO_LIST_API = `${BASE_URL}/api/todos/lists`;
+export const TODO_LIST_API = `${TODO_API}/lists`;
 
 export const LOGIN_API = `${BASE_URL}/api/user/login`;
 
