@@ -10,7 +10,7 @@ type FetchDataOption = {
   method: string;
   headers: {
     "Content-type": string;
-    "Auth-Token": string;
+    "Authorization": string;
   };
   body?: any;
 };
@@ -20,12 +20,12 @@ export const fetchData = async ({
   url,
   body = {},
 }: FetchDataProps) => {
-  const token = await AsyncStorage.getItem("auth-token");
+  const token = await AsyncStorage.getItem("auth-token") || '';
   const opt: FetchDataOption = {
     method,
     headers: {
       "Content-type": "application/json",
-      "Auth-Token": token || "",
+      "Authorization": `Bear ${token}`,
     },
   };
   if (body && Object.keys(body).length) {
