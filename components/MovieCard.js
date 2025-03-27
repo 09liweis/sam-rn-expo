@@ -1,8 +1,11 @@
 import { router } from "expo-router";
 import { Text, View, StyleSheet, Image, Pressable } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function MovieCard({ movie }) {
   const { douban_id, title } = movie;
+
   return (
     <Pressable
       onPress={() =>
@@ -11,16 +14,39 @@ export default function MovieCard({ movie }) {
           params: { douban_id: douban_id, title },
         })
       }
+      style={({ pressed }) => [
+        styles.container,
+        pressed && styles.pressed
+      ]}
     >
       <View style={styles.movieCard}>
-        <Image source={{ uri: movie.poster }} style={styles.movieImage} />
-        <View style={styles.movieInfo}>
-          <Text style={styles.movieTitle} numberOfLines={2}>{movie.title}</Text>
+        <View style={styles.imageContainer}>
+          <Image 
+            source={{ uri: movie.poster }} 
+            style={styles.movieImage}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(0,0,0,0.8)']}
+            style={styles.gradient}
+          />
+        </View>
+        
+        <View style={styles.contentContainer}>
+          <View style={styles.movieInfo}>
+            <Text style={styles.movieTitle} numberOfLines={2}>
+              {movie.title}
+            </Text>
+            <Text style={styles.movieYear} numberOfLines={1}>
+              {movie.year || "2024"}
+            </Text>
+          </View>
+
           <View style={styles.ratingContainer}>
-            <Text style={styles.ratingLabel}>Rating:</Text>
-            <View style={styles.ratingBadge}>
-              <Text style={styles.doubanRating}>{movie.douban_rating}</Text>
-            </View>
+            <AntDesign name="star" size={16} color="#FFD700" />
+            <Text style={styles.ratingText}>
+              {movie.douban_rating || "N/A"}
+            </Text>
           </View>
         </View>
       </View>
@@ -29,57 +55,75 @@ export default function MovieCard({ movie }) {
 }
 
 const styles = StyleSheet.create({
-  movieCard: {
-    flexDirection: "row",
+  container: {
+    margin: 8,
+    borderRadius: 12,
     backgroundColor: '#ffffff',
-    borderRadius: 16,
-    marginHorizontal: 16,
-    marginVertical: 8,
-    padding: 12,
-    shadowColor: '#000',
+    elevation: 4,
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  pressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.98 }],
+  },
+  movieCard: {
+    overflow: 'hidden',
+    borderRadius: 12,
+  },
+  imageContainer: {
+    position: 'relative',
+    aspectRatio: 2/3,
+    width: '100%',
   },
   movieImage: {
-    width: 100,
-    height: 150,
-    borderRadius: 8,
+    width: '100%',
+    height: '100%',
     backgroundColor: '#f0f0f0',
+  },
+  gradient: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: '50%',
+  },
+  contentContainer: {
+    padding: 12,
   },
   movieInfo: {
     flex: 1,
-    marginLeft: 16,
-    justifyContent: 'space-between',
   },
   movieTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#1a1a1a',
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  movieYear: {
+    fontSize: 14,
+    color: '#666666',
     marginBottom: 8,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  ratingLabel: {
-    fontSize: 14,
-    color: '#666666',
-    marginRight: 8,
-  },
-  ratingBadge: {
-    backgroundColor: '#fff3e0',
+    backgroundColor: '#FFF9E6',
+    alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 6,
+    borderRadius: 12,
   },
-  doubanRating: {
+  ratingText: {
+    marginLeft: 4,
     fontSize: 14,
-    fontWeight: '700',
-    color: '#ff9800',
+    fontWeight: '600',
+    color: '#FFB800',
   },
 });

@@ -11,6 +11,7 @@ export default function MovieList({ movies }) {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
+        numColumns={2}
       />
     </SafeAreaView>
   );
@@ -22,6 +23,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   listContent: {
-    paddingVertical: 8,
+    padding: 8,
   },
 });
