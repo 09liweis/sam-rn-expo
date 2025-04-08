@@ -1,9 +1,6 @@
 # React Native Expo by Sam
 
 ## Todo
-- [x] add room function
-- [x] room rental list
-- [ ] rent amout array for each month
 - [x] expense List
 - [x] expense chart
 - [ ] change view between chart and expense list

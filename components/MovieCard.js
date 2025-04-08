@@ -75,11 +75,12 @@ const styles = StyleSheet.create({
   movieCard: {
     overflow: 'hidden',
     borderRadius: 12,
+    flexDirection: 'row'
   },
   imageContainer: {
     position: 'relative',
     aspectRatio: 2/3,
-    width: '100%',
+    width: '30%',
   },
   movieImage: {
     width: '100%',

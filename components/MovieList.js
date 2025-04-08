@@ -11,7 +11,6 @@ export default function MovieList({ movies }) {
         keyExtractor={(item) => item._id}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
-        numColumns={2}
       />
     </SafeAreaView>
   );
