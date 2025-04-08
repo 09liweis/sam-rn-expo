@@ -11,32 +11,20 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { MotiView } from "moti";
 import useTodoStore from "src/stores/todoStore";
 
 const TodoListPage = () => {
-
-  const {showForm, setShowForm} = useTodoStore();
+  const { showForm, setShowForm } = useTodoStore();
 
   const [todoList, setTodoList] = useState<any>({});
 
   return (
-    <MotiView 
-      from={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: 'timing', duration: 500 }}
-      style={todoStyles.todoPageContainer}
-    >
+    <View style={todoStyles.todoPageContainer}>
       <TodoLists />
 
-      <MotiView 
-        from={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ type: 'timing', duration: 500 }}
-        style={todoStyles.todoPageContainer}
-      >
+      <View style={todoStyles.todoPageContainer}>
         <TodoCardList />
-      </MotiView>
+      </View>
 
       <Pressable
         onPress={() => setShowForm(true)}
@@ -45,20 +33,8 @@ const TodoListPage = () => {
         <Text style={todoStyles.todoAddBtnText}>+</Text>
       </Pressable>
 
-      {showForm && (
-        <MotiView
-          from={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ type: 'timing', scale: { type: 'spring' }}}
-          style={todoStyles.todoFormContainer}
-        >
-          <TodoForm
-            todoList={todoList}
-          />
-        </MotiView>
-      )}
-    </MotiView>
+      {showForm && <TodoForm todoList={todoList} />}
+    </View>
   );
 };
 
@@ -100,14 +76,14 @@ const todoStyles = StyleSheet.create({
     paddingTop: 10,
     borderRadius: 100,
     backgroundColor: "#369eff",
-    justifyContent: 'center',
-    alignItems: 'center'
+    justifyContent: "center",
+    alignItems: "center",
   },
   todoAddBtnText: {
     fontSize: 20,
     fontWeight: "bold",
     color: "#fff",
-  }
+  },
 });
 
 export default TodoListPage;

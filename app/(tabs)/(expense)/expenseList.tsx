@@ -7,6 +7,7 @@ import { ActivityIndicator, MD2Colors, IconButton } from "react-native-paper";
 import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
 import { format } from 'date-fns';
+import BalancePrice from "components/expense/BalancePrice";
 
 const INITIAL_BALANCE = '$0.00';
 const INITIAL_STATISTICS = {total:INITIAL_BALANCE,incomes:INITIAL_BALANCE,expenses:INITIAL_BALANCE};
@@ -60,20 +61,9 @@ export default function App() {
       <View style={styles.container}>
         <View style={styles.expenseHeader}>
           <View style={styles.balanceContainer}>
-            <View style={styles.balanceItem}>
-              <Text style={styles.balanceLabel}>Expenses</Text>
-              <Text style={styles.expenseAmount}>{totals.expenses}</Text>
-            </View>
-
-            <View style={styles.balanceItem}>
-              <Text style={styles.totalLabel}>Total Balance</Text>
-              <Text style={styles.totalAmount}>{totals.total}</Text>
-            </View>
-
-            <View style={styles.balanceItem}>
-              <Text style={styles.balanceLabel}>Incomes</Text>
-              <Text style={styles.incomeAmount}>{totals.incomes}</Text>
-            </View>
+            <BalancePrice amount={totals.expenses} amountColor="#dc2626" label="Expenses" />
+            <BalancePrice amount={totals.total} label="Total Balance" amountSize={24} />
+            <BalancePrice amount={totals.incomes} label="Incomes" amountColor="#16a34a" />
           </View>
         </View>
 
@@ -161,23 +151,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-  },
-  balanceItem: {
-    alignItems: 'center',
-  },
-  balanceLabel: {
-    fontSize: 14,
-    color: '#666666',
-    marginBottom: 4,
-  },
-  expenseAmount: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#dc2626',
-  },
-  incomeAmount: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#16a34a',
-  },
+  }
 });
