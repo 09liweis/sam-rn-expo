@@ -5,7 +5,7 @@
 - [x] expense chart
 - [ ] change view between chart and expense list
 - [ ] expense category list
-- [ ] change date
+- [x] change date
 - [ ] add expense/income
 - [ ] movie list of different theaters
 - [ ] movie detail

@@ -7,7 +7,6 @@ import { ActivityIndicator, MD2Colors, IconButton } from "react-native-paper";
 import { EXPENSES_STATISTICS_API } from "src/constant/api";
 import { fetchData } from "src/utils";
 import { format } from 'date-fns';
-import { MotiView } from "moti";
 
 const INITIAL_BALANCE = '$0.00';
 const INITIAL_STATISTICS = {total:INITIAL_BALANCE,incomes:INITIAL_BALANCE,expenses:INITIAL_BALANCE};
@@ -99,18 +98,12 @@ export default function App() {
             <ActivityIndicator size="large" color={MD2Colors.blue500} />
           </View>
         ) : 
-        <MotiView 
-          from={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: 'timing', duration: 200 }}
-        >
         <FlatList
           data={expenses}
           renderItem={renderExpenses}
           // keyExtractor={(item) => item.category}
           showsVerticalScrollIndicator={false}
-        />
-        </MotiView>}
+        />}
       </View>
     </PageScreenContainer>
   );
