@@ -1,40 +1,24 @@
 {
   "expo": {
-    "name": "App Sam",
+    "name": "sam-rn-expo",
     "slug": "sam-rn-expo",
-    "scheme": "your-app-scheme",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": ["**/*"],
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.samliweisen.samrnexpo"
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
     },
     "web": {
-      "bundler": "metro",
       "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["expo-router"],
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "ea88906d-d989-4722-9a40-e3d0f1870eff"
-      }
     }
   }
 }
