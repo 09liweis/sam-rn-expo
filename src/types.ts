@@ -1,13 +1,14 @@
 export interface User {
-  username: string;
+  email: string;
+  token: string;
   loginAt: number;
 }
 
 export interface Todo {
-  id: string;
-  title: string;
-  done: boolean;
-  createdAt: number;
+  _id: string;
+  name: string;
+  date: string;
+  status: string;
 }
 
 export interface Expense {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { AppProvider, useApp } from './src/context/AppContext';
 import LoginScreen from './src/screens/LoginScreen';
@@ -18,10 +18,12 @@ function Header() {
       <View style={styles.headerUserInfo}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>
-            {user?.username.charAt(0).toUpperCase()}
+            {user?.email.charAt(0).toUpperCase()}
           </Text>
         </View>
-        <Text style={styles.headerUsername}>{user?.username}</Text>
+        <Text style={styles.headerUsername} numberOfLines={1}>
+          {user?.email}
+        </Text>
       </View>
       <Pressable style={styles.logoutButton} onPress={logout}>
         <Text style={styles.logoutText}>Log out</Text>
@@ -62,7 +64,14 @@ function MainScreen() {
 }
 
 function Root() {
-  const { user } = useApp();
+  const { initializing, user } = useApp();
+  if (initializing) {
+    return (
+      <View style={styles.splash}>
+        <ActivityIndicator size="large" color="#4f6df5" />
+      </View>
+    );
+  }
   if (!user) {
     return <LoginScreen />;
   }
@@ -78,6 +87,12 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  splash: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f5f6fa',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f5f6fa',

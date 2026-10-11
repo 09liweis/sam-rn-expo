@@ -2,25 +2,33 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
 import { Expense, Tab, Todo, User, generateId } from '../types';
+import {
+  clearSession,
+  getStoredSession,
+  saveSession,
+} from '../storage';
+import { ApiError, fetchTodosRequest, loginRequest } from '../services/api';
 
 interface AppContextValue {
   // auth
+  initializing: boolean;
   user: User | null;
-  login: (username: string) => void;
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   // navigation state
   activeTab: Tab;
   setActiveTab: (tab: Tab) => void;
-  // todos
+  // todos (server)
   todos: Todo[];
-  addTodo: (title: string) => void;
-  toggleTodo: (id: string) => void;
-  removeTodo: (id: string) => void;
-  // expenses
+  todosLoading: boolean;
+  todosError: string | null;
+  fetchTodos: () => Promise<void>;
+  // expenses (local)
   expenses: Expense[];
   addExpense: (title: string, amount: number) => void;
   removeExpense: (id: string) => void;
@@ -30,39 +38,65 @@ interface AppContextValue {
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
+  const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>('todo');
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [todosLoading, setTodosLoading] = useState(false);
+  const [todosError, setTodosError] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  const login = useCallback((username: string) => {
-    setUser({ username, loginAt: Date.now() });
+  // Restore session from localStorage on startup
+  useEffect(() => {
+    const stored = getStoredSession();
+    if (stored) {
+      setUser({
+        email: stored.email,
+        token: stored.token,
+        loginAt: Date.now(),
+      });
+    }
+    setInitializing(false);
+  }, []);
+
+  const login = useCallback(async (email: string, password: string) => {
+    const token = await loginRequest(email, password);
+    saveSession(token, email);
+    setUser({ email, token, loginAt: Date.now() });
     setActiveTab('todo');
   }, []);
 
   const logout = useCallback(() => {
+    clearSession();
     setUser(null);
     setTodos([]);
+    setTodosError(null);
     setExpenses([]);
     setActiveTab('todo');
   }, []);
 
-  const addTodo = useCallback((title: string) => {
-    setTodos((prev) => [
-      { id: generateId(), title, done: false, createdAt: Date.now() },
-      ...prev,
-    ]);
-  }, []);
-
-  const toggleTodo = useCallback((id: string) => {
-    setTodos((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)),
-    );
-  }, []);
-
-  const removeTodo = useCallback((id: string) => {
-    setTodos((prev) => prev.filter((t) => t.id !== id));
-  }, []);
+  const fetchTodos = useCallback(async () => {
+    setTodosLoading(true);
+    setTodosError(null);
+    try {
+      const currentToken = user?.token;
+      if (!currentToken) {
+        throw new ApiError('Not logged in');
+      }
+      const list = await fetchTodosRequest(currentToken);
+      setTodos(list);
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : 'Failed to load todos';
+      setTodosError(message);
+      // Token expired / revoked -> force logout
+      if (err instanceof ApiError && err.status === 401) {
+        logout();
+      }
+    } finally {
+      setTodosLoading(false);
+    }
+  }, [user?.token, logout]);
 
   const addExpense = useCallback((title: string, amount: number) => {
     setExpenses((prev) => [
@@ -82,29 +116,31 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(
     () => ({
+      initializing,
       user,
       login,
       logout,
       activeTab,
       setActiveTab,
       todos,
-      addTodo,
-      toggleTodo,
-      removeTodo,
+      todosLoading,
+      todosError,
+      fetchTodos,
       expenses,
       addExpense,
       removeExpense,
       totalExpense,
     }),
     [
+      initializing,
       user,
       login,
       logout,
       activeTab,
       todos,
-      addTodo,
-      toggleTodo,
-      removeTodo,
+      todosLoading,
+      todosError,
+      fetchTodos,
       expenses,
       addExpense,
       removeExpense,

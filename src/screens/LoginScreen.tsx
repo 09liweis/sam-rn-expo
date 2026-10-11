@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -13,14 +14,15 @@ import { useApp } from '../context/AppContext';
 
 export default function LoginScreen() {
   const { login } = useApp();
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = () => {
-    const name = username.trim();
-    if (!name) {
-      setError('Please enter a username');
+  const handleLogin = async () => {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      setError('Please enter your email');
       return;
     }
     if (password.length < 4) {
@@ -28,7 +30,15 @@ export default function LoginScreen() {
       return;
     }
     setError('');
-    login(name);
+    setLoading(true);
+    try {
+      await login(trimmedEmail, password);
+      // navigation handled by Root once user is set
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,29 +51,40 @@ export default function LoginScreen() {
         <Text style={styles.title}>Welcome</Text>
         <Text style={styles.subtitle}>Sign in to manage your day</Text>
 
-        <Text style={styles.label}>Username</Text>
+        <Text style={styles.label}>Email</Text>
         <TextInput
           style={styles.input}
-          placeholder="e.g. sam"
-          value={username}
-          onChangeText={setUsername}
+          placeholder="you@example.com"
+          value={email}
+          onChangeText={setEmail}
           autoCapitalize="none"
           autoCorrect={false}
+          keyboardType="email-address"
+          textContentType="emailAddress"
         />
 
         <Text style={styles.label}>Password</Text>
         <TextInput
           style={styles.input}
-          placeholder="At least 4 characters"
+          placeholder="Your password"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
+          textContentType="password"
         />
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
 
-        <Pressable style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Log in</Text>
+        <Pressable
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Log in</Text>
+          )}
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -131,6 +152,9 @@ const styles = StyleSheet.create({
     paddingVertical: 13,
     alignItems: 'center',
     marginTop: 4,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#fff',
