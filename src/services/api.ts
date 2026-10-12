@@ -1,4 +1,4 @@
-import { Todo } from '../types';
+import { Todo, UserDetail } from '../types';
 
 const BASE_URL = 'https://samliweisen.onrender.com';
 const REQUEST_TIMEOUT_MS = 30000;
@@ -83,4 +83,19 @@ export async function fetchTodosRequest(token: string): Promise<Todo[]> {
     throw new ApiError('Invalid response: expected {todos} array');
   }
   return todos as Todo[];
+}
+
+export async function fetchUserDetailRequest(token: string): Promise<UserDetail> {
+  const data = await request('/api/user/detail', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  // Accept either {user: {...}} or a flat user object
+  if (data.user && typeof data.user === 'object') {
+    return data.user as UserDetail;
+  }
+  return data as UserDetail;
 }

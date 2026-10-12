@@ -6,13 +6,25 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { Expense, Tab, Todo, User, generateId } from '../types';
 import {
-  clearSession,
-  getStoredSession,
-  saveSession,
+  Expense,
+  Tab,
+  Todo,
+  User,
+  UserDetail,
+  generateId,
+} from '../types';
+import {
+  clearToken,
+  getStoredToken,
+  saveToken,
 } from '../storage';
-import { ApiError, fetchTodosRequest, loginRequest } from '../services/api';
+import {
+  ApiError,
+  fetchTodosRequest,
+  fetchUserDetailRequest,
+  loginRequest,
+} from '../services/api';
 
 interface AppContextValue {
   // auth
@@ -37,6 +49,20 @@ interface AppContextValue {
 
 const AppContext = createContext<AppContextValue | undefined>(undefined);
 
+function buildUserFromDetail(
+  detail: UserDetail,
+  token: string,
+  fallbackEmail = '',
+): User {
+  const email =
+    (typeof detail.eml === 'string' && detail.eml) || fallbackEmail;
+  return {
+    email,
+    token,
+    loginAt: Date.now(),
+  };
+}
+
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<User | null>(null);
@@ -46,28 +72,52 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [todosError, setTodosError] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  // Restore session from localStorage on startup
+  // On app open: if auth_token exists, fetch user detail to refresh state
   useEffect(() => {
-    const stored = getStoredSession();
-    if (stored) {
-      setUser({
-        email: stored.email,
-        token: stored.token,
-        loginAt: Date.now(),
-      });
+    let cancelled = false;
+
+    async function restoreSession() {
+      const token = getStoredToken();
+      if (!token) {
+        setInitializing(false);
+        return;
+      }
+      try {
+        const detail = await fetchUserDetailRequest(token);
+        if (cancelled) return;
+        setUser(buildUserFromDetail(detail, token));
+      } catch {
+        if (cancelled) return;
+        // Token invalid / expired -> clear and stay logged out
+        clearToken();
+        setUser(null);
+      } finally {
+        if (!cancelled) setInitializing(false);
+      }
     }
-    setInitializing(false);
+
+    void restoreSession();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const token = await loginRequest(email, password);
-    saveSession(token, email);
-    setUser({ email, token, loginAt: Date.now() });
+    saveToken(token);
+    try {
+      const detail = await fetchUserDetailRequest(token);
+      setUser(buildUserFromDetail(detail, token, email));
+    } catch {
+      // If detail fails after a successful login, still keep the user signed in
+      // with the credentials we have so they can retry fetching detail later.
+      setUser(buildUserFromDetail({}, token, email));
+    }
     setActiveTab('todo');
   }, []);
 
   const logout = useCallback(() => {
-    clearSession();
+    clearToken();
     setUser(null);
     setTodos([]);
     setTodosError(null);

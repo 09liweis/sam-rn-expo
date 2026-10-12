@@ -1,5 +1,4 @@
 const TOKEN_KEY = 'auth_token';
-const EMAIL_KEY = 'auth_email';
 
 const memoryStore = new Map<string, string>();
 
@@ -37,19 +36,14 @@ function removeItem(key: string): void {
   memoryStore.delete(key);
 }
 
-export function getStoredSession(): { token: string; email: string } | null {
-  const token = getItem(TOKEN_KEY);
-  const email = getItem(EMAIL_KEY);
-  if (!token || !email) return null;
-  return { token, email };
+export function getStoredToken(): string | null {
+  return getItem(TOKEN_KEY);
 }
 
-export function saveSession(token: string, email: string): void {
+export function saveToken(token: string): void {
   setItem(TOKEN_KEY, token);
-  setItem(EMAIL_KEY, email);
 }
 
-export function clearSession(): void {
+export function clearToken(): void {
   removeItem(TOKEN_KEY);
-  removeItem(EMAIL_KEY);
 }

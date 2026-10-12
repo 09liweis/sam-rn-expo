@@ -1,3 +1,10 @@
+export interface UserDetail {
+  _id?: string;
+  eml?: string;
+  nm?: string;
+  [key: string]: unknown;
+}
+
 export interface User {
   email: string;
   token: string;
