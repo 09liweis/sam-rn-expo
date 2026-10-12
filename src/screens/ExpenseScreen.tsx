@@ -1,363 +1,587 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
-import { Expense, Statistics } from '../types';
+import { StatisticsCategory, StatisticsItem } from '../types';
 
-function formatAmount(amount: number): string {
-  return amount.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
+// ---------- Color helpers ----------
+const COLORS = {
+  income: '#1faa5a',
+  incomeBg: '#e8f8ee',
+  expense: '#e74c5c',
+  expenseBg: '#fdeaea',
+  total: '#4f6df5',
+  totalBg: '#e8ecfd',
+  text: '#1f2330',
+  textMuted: '#8a8f9e',
+  textSubtle: '#a5aab5',
+  border: '#e6e8ee',
+  surface: '#ffffff',
+  background: '#f5f6fa',
+  trackBg: '#eef0f5',
+};
+
+const CATEGORY_ICON: Record<string, string> = {
+  grocery: '🛒',
+  food: '🍔',
+  restaurant: '🍽️',
+  health: '🏥',
+  medical: '💊',
+  internet: '🌐',
+  phone: '📱',
+  utility: '💡',
+  fuel: '⛽',
+  gas: '⛽',
+  transport: '🚗',
+  shopping: '🛍️',
+  entertainment: '🎬',
+  rent: '🏠',
+  housing: '🏠',
+  salary: '💰',
+  income: '💰',
+  refund: '↩️',
+  education: '📚',
+  travel: '✈️',
+  fitness: '🏋️',
+  default: '💸',
+};
+
+function categoryIcon(name: string): string {
+  return CATEGORY_ICON[name.toLowerCase()] ?? CATEGORY_ICON.default;
+}
+
+function parsePercentage(percentage: string): number {
+  const match = /([\d.]+)/.exec(percentage);
+  if (!match) return 0;
+  const n = Number.parseFloat(match[1]);
+  return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0;
+}
+
+function formatMonth(date: string): string {
+  // "2026-10" -> "October 2026"
+  const d = new Date(`${date}-01T00:00:00`);
+  if (Number.isNaN(d.getTime())) return date;
+  return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+}
+
+function formatItemDate(date: string): string {
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return date;
+  return d.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
   });
 }
 
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return '-';
-  if (typeof value === 'number') {
-    return Number.isInteger(value) ? String(value) : formatAmount(value);
-  }
-  if (typeof value === 'string' || typeof value === 'boolean') {
-    return String(value);
-  }
-  return JSON.stringify(value);
-}
-
-function StatisticsCard({ data }: { data: Statistics }) {
-  const entries = Object.entries(data);
-  if (entries.length === 0) {
-    return <Text style={styles.statisticsEmpty}>No data</Text>;
-  }
+// ---------- Metric tile ----------
+function MetricTile({
+  label,
+  value,
+  color,
+  bg,
+}: {
+  label: string;
+  value: string;
+  color: string;
+  bg: string;
+}) {
   return (
-    <View style={styles.statisticsTable}>
-      {entries.map(([key, value]) => (
-        <View key={key} style={styles.statisticsRow}>
-          <Text style={styles.statisticsKey}>{key}</Text>
-          <Text style={styles.statisticsValue} numberOfLines={2}>
-            {formatValue(value)}
-          </Text>
-        </View>
-      ))}
+    <View style={[styles.metricTile, { backgroundColor: bg }]}>
+      <Text style={[styles.metricLabel, { color }]}>{label}</Text>
+      <Text style={[styles.metricValue, { color }]}>{value}</Text>
     </View>
   );
 }
 
+// ---------- Item row ----------
+function ItemRow({ item }: { item: StatisticsItem }) {
+  const positive = item.income;
+  const accent = positive ? COLORS.income : COLORS.expense;
+  const accentBg = positive ? COLORS.incomeBg : COLORS.expenseBg;
+  const titleText = item.title || item.place?.name || item.category;
+  const subtitle = item.place?.address;
+
+  return (
+    <View style={styles.itemRow}>
+      <View style={[styles.itemDot, { backgroundColor: accent }]} />
+      <View style={styles.itemBody}>
+        <Text style={styles.itemTitle} numberOfLines={1}>
+          {titleText}
+        </Text>
+        {subtitle ? (
+          <Text style={styles.itemSubtitle} numberOfLines={1}>
+            {subtitle}
+          </Text>
+        ) : null}
+        <Text style={styles.itemDate}>{formatItemDate(item.date)}</Text>
+      </View>
+      <View style={[styles.itemPriceBadge, { backgroundColor: accentBg }]}>
+        <Text style={[styles.itemPrice, { color: accent }]}>
+          {item.formatedPrice}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+// ---------- Category card ----------
+function CategoryCard({
+  category,
+  index,
+}: {
+  category: StatisticsCategory;
+  index: number;
+}) {
+  const [expanded, setExpanded] = useState(index < 2);
+  const isIncome = category.income;
+  const accent = isIncome ? COLORS.income : COLORS.expense;
+  const accentBg = isIncome ? COLORS.incomeBg : COLORS.expenseBg;
+  const pct = parsePercentage(category.percentage);
+  const itemsCount = category.items.length;
+
+  return (
+    <View style={styles.categoryCard}>
+      <Pressable
+        style={styles.categoryHeader}
+        onPress={() => setExpanded((v) => !v)}
+      >
+        <View style={[styles.categoryIcon, { backgroundColor: accentBg }]}>
+          <Text style={styles.categoryIconText}>
+            {categoryIcon(category.category)}
+          </Text>
+        </View>
+        <View style={styles.categoryInfo}>
+          <View style={styles.categoryTopRow}>
+            <Text style={styles.categoryName}>
+              {category.category.charAt(0).toUpperCase() +
+                category.category.slice(1)}
+            </Text>
+            <View
+              style={[styles.categoryBadge, { backgroundColor: accentBg }]}
+            >
+              <Text style={[styles.categoryBadgeText, { color: accent }]}>
+                {category.percentage}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.progressTrack}>
+            <View
+              style={[
+                styles.progressFill,
+                {
+                  width: `${pct}%`,
+                  backgroundColor: accent,
+                },
+              ]}
+            />
+          </View>
+          <View style={styles.categoryBottomRow}>
+            <Text style={styles.categoryItemsCount}>
+              {itemsCount} item{itemsCount === 1 ? '' : 's'}
+            </Text>
+            <Text style={[styles.categoryTotal, { color: accent }]}>
+              {category.total}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.categoryChevron}>{expanded ? '▲' : '▼'}</Text>
+      </Pressable>
+
+      {expanded && itemsCount > 0 ? (
+        <View style={styles.itemsContainer}>
+          {category.items.map((item) => (
+            <ItemRow key={item._id} item={item} />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+// ---------- Screen ----------
 export default function ExpenseScreen() {
   const {
-    expenses,
-    addExpense,
-    removeExpense,
-    totalExpense,
     statistics,
     statisticsLoading,
     statisticsError,
     fetchStatistics,
     user,
   } = useApp();
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState('');
 
-  // Fetch statistics every time the user switches to the expense tab
   useEffect(() => {
     if (user) {
       void fetchStatistics();
     }
   }, [user, fetchStatistics]);
 
-  const handleAdd = () => {
-    const name = title.trim();
-    const value = Number.parseFloat(amount);
-    if (!name) return;
-    if (Number.isNaN(value) || value <= 0) return;
-    addExpense(name, value);
-    setTitle('');
-    setAmount('');
-  };
-
-  const renderItem = ({ item }: { item: Expense }) => (
-    <View style={styles.row}>
-      <View style={styles.rowInfo}>
-        <Text style={styles.rowTitle}>{item.title}</Text>
-        <Text style={styles.rowDate}>
-          {new Date(item.createdAt).toLocaleDateString()}
-        </Text>
-      </View>
-      <Text style={styles.rowAmount}>{formatAmount(item.amount)}</Text>
-      <Pressable
-        style={styles.deleteButton}
-        onPress={() => removeExpense(item.id)}
-        accessibilityLabel="Delete expense"
-      >
-        <Text style={styles.deleteText}>✕</Text>
-      </Pressable>
-    </View>
+  const categories = useMemo(
+    () => statistics?.categoryPrice ?? [],
+    [statistics],
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputRow}>
-        <TextInput
-          style={[styles.input, styles.titleInput]}
-          placeholder="Expense title"
-          value={title}
-          onChangeText={setTitle}
-        />
-        <TextInput
-          style={[styles.input, styles.amountInput]}
-          placeholder="Amount"
-          value={amount}
-          onChangeText={(text) => setAmount(text.replace(/[^0-9.]/g, ''))}
-          keyboardType="decimal-pad"
-        />
-        <Pressable style={styles.addButton} onPress={handleAdd}>
-          <Text style={styles.addButtonText}>Add</Text>
-        </Pressable>
-      </View>
-
-      <View style={styles.statisticsCard}>
-        <View style={styles.statisticsHeader}>
-          <Text style={styles.statisticsTitle}>Statistics</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.headerCard}>
+        <View style={styles.headerTopRow}>
+          <View>
+            <Text style={styles.headerLabel}>Monthly summary</Text>
+            <Text style={styles.headerTitle}>
+              {statistics ? formatMonth(statistics.date) : '—'}
+            </Text>
+          </View>
           <Pressable
-            style={[styles.statisticsRefresh, statisticsLoading && styles.statisticsRefreshDisabled]}
+            style={[
+              styles.refreshButton,
+              statisticsLoading && styles.refreshDisabled,
+            ]}
             onPress={() => void fetchStatistics()}
             disabled={statisticsLoading}
           >
             {statisticsLoading ? (
-              <ActivityIndicator size="small" color="#fff" />
+              <ActivityIndicator size="small" color={COLORS.total} />
             ) : (
-              <Text style={styles.statisticsRefreshText}>Refresh</Text>
+              <Text style={styles.refreshText}>↻ Refresh</Text>
             )}
           </Pressable>
         </View>
-        {statisticsError ? (
-          <View style={styles.statisticsErrorBox}>
-            <Text style={styles.statisticsErrorText}>{statisticsError}</Text>
-            <Pressable
-              style={styles.statisticsRetry}
-              onPress={() => void fetchStatistics()}
-            >
-              <Text style={styles.statisticsRetryText}>Retry</Text>
-            </Pressable>
+
+        {statistics ? (
+          <View style={styles.metricsRow}>
+            <MetricTile
+              label="Incomes"
+              value={statistics.incomes}
+              color={COLORS.income}
+              bg={COLORS.incomeBg}
+            />
+            <MetricTile
+              label="Expenses"
+              value={statistics.expenses}
+              color={COLORS.expense}
+              bg={COLORS.expenseBg}
+            />
+            <MetricTile
+              label="Total"
+              value={statistics.total}
+              color={COLORS.total}
+              bg={COLORS.totalBg}
+            />
           </View>
-        ) : statistics ? (
-          <StatisticsCard data={statistics} />
-        ) : statisticsLoading ? (
-          <ActivityIndicator color="#fff" style={{ marginVertical: 10 }} />
         ) : null}
       </View>
 
-      <View style={styles.totalCard}>
-        <Text style={styles.totalLabel}>Total spent</Text>
-        <Text style={styles.totalValue}>{formatAmount(totalExpense)}</Text>
+      {statisticsError ? (
+        <View style={styles.errorBox}>
+          <Text style={styles.errorText}>{statisticsError}</Text>
+          <Pressable
+            style={styles.retryButton}
+            onPress={() => void fetchStatistics()}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
+      {!statistics && statisticsLoading ? (
+        <View style={styles.loadingBox}>
+          <ActivityIndicator size="large" color={COLORS.total} />
+          <Text style={styles.loadingText}>Loading statistics…</Text>
+        </View>
+      ) : null}
+
+      {statistics && categories.length === 0 ? (
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyEmoji}>📊</Text>
+          <Text style={styles.emptyText}>No categories this month</Text>
+        </View>
+      ) : null}
+
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Categories</Text>
+        <Text style={styles.sectionCount}>
+          {categories.length} total
+        </Text>
       </View>
 
-      <FlatList
-        data={expenses}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        contentContainerStyle={expenses.length === 0 && styles.empty}
-        ListEmptyComponent={
-          <Text style={styles.emptyText}>No expenses recorded yet</Text>
-        }
-      />
-    </View>
+      {categories.map((cat, idx) => (
+        <CategoryCard key={cat.category + idx} category={cat} index={idx} />
+      ))}
+
+      <View style={{ height: 24 }} />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f6fa',
+    backgroundColor: COLORS.background,
   },
-  inputRow: {
+  contentContainer: {
+    padding: 16,
+  },
+  headerCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  headerTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
+  },
+  headerLabel: {
+    color: COLORS.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
+  },
+  headerTitle: {
+    color: COLORS.text,
+    fontSize: 22,
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  refreshButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.total,
+  },
+  refreshDisabled: {
+    opacity: 0.6,
+  },
+  refreshText: {
+    color: COLORS.total,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  metricsRow: {
     flexDirection: 'row',
     gap: 8,
-    marginBottom: 12,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#d9dce3',
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 15,
-    backgroundColor: '#fff',
-    color: '#1f2330',
-  },
-  titleInput: {
-    flex: 2,
-  },
-  amountInput: {
+  metricTile: {
     flex: 1,
+    borderRadius: 12,
+    padding: 12,
   },
-  addButton: {
-    backgroundColor: '#4f6df5',
-    borderRadius: 10,
-    paddingHorizontal: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
+  metricLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+    textTransform: 'uppercase',
   },
-  addButtonText: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 15,
+  metricValue: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginTop: 4,
   },
-  statisticsCard: {
-    backgroundColor: '#4f6df5',
+  errorBox: {
+    backgroundColor: COLORS.expenseBg,
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
-  },
-  statisticsHeader: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+  },
+  errorText: {
+    color: COLORS.expense,
+    fontSize: 13,
     marginBottom: 8,
-  },
-  statisticsTitle: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  statisticsRefresh: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-    borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  statisticsRefreshDisabled: {
-    opacity: 0.6,
-  },
-  statisticsRefreshText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  statisticsTable: {
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  statisticsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 5,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  statisticsKey: {
-    color: 'rgba(255, 255, 255, 0.85)',
-    fontSize: 13,
-    fontWeight: '500',
-    marginRight: 12,
-  },
-  statisticsValue: {
-    color: '#fff',
-    fontSize: 13,
-    fontWeight: '600',
-    flexShrink: 1,
-    textAlign: 'right',
-  },
-  statisticsEmpty: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 13,
     textAlign: 'center',
+  },
+  retryButton: {
+    paddingHorizontal: 16,
     paddingVertical: 6,
-  },
-  statisticsErrorBox: {
-    backgroundColor: 'rgba(214, 69, 69, 0.85)',
     borderRadius: 8,
-    padding: 10,
-    alignItems: 'center',
+    backgroundColor: COLORS.expense,
   },
-  statisticsErrorText: {
+  retryText: {
     color: '#fff',
-    fontSize: 13,
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  statisticsRetry: {
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 6,
-    backgroundColor: '#fff',
-  },
-  statisticsRetryText: {
-    color: '#d64545',
     fontSize: 12,
     fontWeight: '700',
   },
-  totalCard: {
-    backgroundColor: '#fff',
+  loadingBox: {
+    backgroundColor: COLORS.surface,
     borderRadius: 12,
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    padding: 28,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e6e8ee',
-  },
-  totalLabel: {
-    color: '#5a5f6e',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  totalValue: {
-    color: '#1f2330',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  row: {
-    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+  },
+  loadingText: {
+    color: COLORS.textMuted,
+    fontSize: 13,
+    marginTop: 8,
+  },
+  emptyBox: {
+    backgroundColor: COLORS.surface,
     borderRadius: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 8,
-  },
-  rowInfo: {
-    flex: 1,
-  },
-  rowTitle: {
-    fontSize: 15,
-    color: '#1f2330',
-    fontWeight: '500',
-  },
-  rowDate: {
-    fontSize: 12,
-    color: '#a5aab5',
-    marginTop: 2,
-  },
-  rowAmount: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#d64545',
-    marginRight: 10,
-  },
-  deleteButton: {
-    padding: 6,
-  },
-  deleteText: {
-    color: '#d64545',
-    fontSize: 14,
-  },
-  empty: {
-    flexGrow: 1,
-    justifyContent: 'center',
+    padding: 28,
+    marginBottom: 12,
     alignItems: 'center',
+  },
+  emptyEmoji: {
+    fontSize: 36,
+    marginBottom: 6,
   },
   emptyText: {
-    color: '#a5aab5',
+    color: COLORS.textMuted,
     fontSize: 14,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  sectionTitle: {
+    color: COLORS.text,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  sectionCount: {
+    color: COLORS.textMuted,
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  categoryCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 14,
+    marginBottom: 10,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+  },
+  categoryHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+  },
+  categoryIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  categoryIconText: {
+    fontSize: 22,
+  },
+  categoryInfo: {
+    flex: 1,
+  },
+  categoryTopRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  categoryName: {
+    color: COLORS.text,
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  categoryBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
+  },
+  categoryBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  progressTrack: {
+    height: 5,
+    backgroundColor: COLORS.trackBg,
+    borderRadius: 3,
+    marginTop: 10,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  categoryBottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
+  categoryItemsCount: {
+    color: COLORS.textMuted,
+    fontSize: 12,
+  },
+  categoryTotal: {
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  categoryChevron: {
+    color: COLORS.textMuted,
+    fontSize: 12,
+    marginLeft: 10,
+  },
+  itemsContainer: {
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: COLORS.border,
+    backgroundColor: '#fbfbfd',
+  },
+  itemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: COLORS.border,
+  },
+  itemDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 12,
+  },
+  itemBody: {
+    flex: 1,
+    marginRight: 10,
+  },
+  itemTitle: {
+    color: COLORS.text,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  itemSubtitle: {
+    color: COLORS.textSubtle,
+    fontSize: 12,
+    marginTop: 2,
+  },
+  itemDate: {
+    color: COLORS.textMuted,
+    fontSize: 11,
+    marginTop: 3,
+  },
+  itemPriceBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  itemPrice: {
+    fontSize: 13,
+    fontWeight: '700',
   },
 });

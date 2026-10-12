@@ -27,7 +27,47 @@ export interface Expense {
 
 export type Tab = 'todo' | 'expense';
 
-export type Statistics = Record<string, unknown>;
+export interface StatisticsPlace {
+  _id: string;
+  name: string;
+  address?: string;
+  icon?: string;
+  rating?: number;
+  place_id?: string;
+  lat?: string | number;
+  lng?: string | number;
+  types?: string[];
+  photos?: string[];
+  [key: string]: unknown;
+}
+
+export interface StatisticsItem {
+  _id: string;
+  date: string;
+  formatedPrice: string;
+  price: number;
+  income: boolean;
+  category: string;
+  title?: string;
+  place?: StatisticsPlace;
+  [key: string]: unknown;
+}
+
+export interface StatisticsCategory {
+  category: string;
+  percentage: string;
+  total: string;
+  income: boolean;
+  items: StatisticsItem[];
+}
+
+export interface StatisticsResponse {
+  date: string;
+  total: string;
+  incomes: string;
+  expenses: string;
+  categoryPrice: StatisticsCategory[];
+}
 
 let counter = 0;
 

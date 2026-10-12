@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import {
   Expense,
-  Statistics,
+  StatisticsResponse,
   Tab,
   Todo,
   User,
@@ -43,7 +43,7 @@ interface AppContextValue {
   todosError: string | null;
   fetchTodos: () => Promise<void>;
   // statistics (server)
-  statistics: Statistics | null;
+  statistics: StatisticsResponse | null;
   statisticsLoading: boolean;
   statisticsError: string | null;
   fetchStatistics: () => Promise<void>;
@@ -77,7 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todosLoading, setTodosLoading] = useState(false);
   const [todosError, setTodosError] = useState<string | null>(null);
-  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [statistics, setStatistics] = useState<StatisticsResponse | null>(null);
   const [statisticsLoading, setStatisticsLoading] = useState(false);
   const [statisticsError, setStatisticsError] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);

@@ -1,4 +1,4 @@
-import { Statistics, Todo, UserDetail } from '../types';
+import { StatisticsResponse, Todo, UserDetail } from '../types';
 
 const BASE_URL = 'https://samliweisen.onrender.com';
 const REQUEST_TIMEOUT_MS = 30000;
@@ -100,12 +100,12 @@ export async function fetchUserDetailRequest(token: string): Promise<UserDetail>
   return data as UserDetail;
 }
 
-export async function fetchStatisticsRequest(token: string): Promise<Statistics> {
+export async function fetchStatisticsRequest(token: string): Promise<StatisticsResponse> {
   const data = await request('/api/transactions/statistics', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
-  return data as Statistics;
+  return data as unknown as StatisticsResponse;
 }
