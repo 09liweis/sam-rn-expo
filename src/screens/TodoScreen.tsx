@@ -10,16 +10,6 @@ import {
 import { useApp } from '../context/AppContext';
 import { Todo } from '../types';
 
-function formatDate(date: string): string {
-  const d = new Date(date);
-  if (Number.isNaN(d.getTime())) return date;
-  return d.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
-
 export default function TodoScreen() {
   const { todos, todosLoading, todosError, fetchTodos, user } = useApp();
 
@@ -33,7 +23,7 @@ export default function TodoScreen() {
     <View style={styles.row}>
       <View style={styles.rowInfo}>
         <Text style={styles.rowTitle}>{item.name}</Text>
-        <Text style={styles.rowDate}>{formatDate(item.date)}</Text>
+        <Text style={styles.rowDate}>{item.date}</Text>
       </View>
       <View style={styles.statusBadge}>
         <Text style={styles.statusText}>{item.status}</Text>
