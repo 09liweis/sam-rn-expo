@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   FlatList,
   Pressable,
   StyleSheet,
@@ -8,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
-import { Expense } from '../types';
+import { Expense, Statistics } from '../types';
 
 function formatAmount(amount: number): string {
   return amount.toLocaleString('en-US', {
@@ -17,10 +18,57 @@ function formatAmount(amount: number): string {
   });
 }
 
+function formatValue(value: unknown): string {
+  if (value === null || value === undefined) return '-';
+  if (typeof value === 'number') {
+    return Number.isInteger(value) ? String(value) : formatAmount(value);
+  }
+  if (typeof value === 'string' || typeof value === 'boolean') {
+    return String(value);
+  }
+  return JSON.stringify(value);
+}
+
+function StatisticsCard({ data }: { data: Statistics }) {
+  const entries = Object.entries(data);
+  if (entries.length === 0) {
+    return <Text style={styles.statisticsEmpty}>No data</Text>;
+  }
+  return (
+    <View style={styles.statisticsTable}>
+      {entries.map(([key, value]) => (
+        <View key={key} style={styles.statisticsRow}>
+          <Text style={styles.statisticsKey}>{key}</Text>
+          <Text style={styles.statisticsValue} numberOfLines={2}>
+            {formatValue(value)}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+}
+
 export default function ExpenseScreen() {
-  const { expenses, addExpense, removeExpense, totalExpense } = useApp();
+  const {
+    expenses,
+    addExpense,
+    removeExpense,
+    totalExpense,
+    statistics,
+    statisticsLoading,
+    statisticsError,
+    fetchStatistics,
+    user,
+  } = useApp();
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
+
+  // Fetch statistics every time the user switches to the expense tab
+  useEffect(() => {
+    if (user) {
+      void fetchStatistics();
+    }
+  }, [user, fetchStatistics]);
 
   const handleAdd = () => {
     const name = title.trim();
@@ -70,6 +118,38 @@ export default function ExpenseScreen() {
         <Pressable style={styles.addButton} onPress={handleAdd}>
           <Text style={styles.addButtonText}>Add</Text>
         </Pressable>
+      </View>
+
+      <View style={styles.statisticsCard}>
+        <View style={styles.statisticsHeader}>
+          <Text style={styles.statisticsTitle}>Statistics</Text>
+          <Pressable
+            style={[styles.statisticsRefresh, statisticsLoading && styles.statisticsRefreshDisabled]}
+            onPress={() => void fetchStatistics()}
+            disabled={statisticsLoading}
+          >
+            {statisticsLoading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.statisticsRefreshText}>Refresh</Text>
+            )}
+          </Pressable>
+        </View>
+        {statisticsError ? (
+          <View style={styles.statisticsErrorBox}>
+            <Text style={styles.statisticsErrorText}>{statisticsError}</Text>
+            <Pressable
+              style={styles.statisticsRetry}
+              onPress={() => void fetchStatistics()}
+            >
+              <Text style={styles.statisticsRetryText}>Retry</Text>
+            </Pressable>
+          </View>
+        ) : statistics ? (
+          <StatisticsCard data={statistics} />
+        ) : statisticsLoading ? (
+          <ActivityIndicator color="#fff" style={{ marginVertical: 10 }} />
+        ) : null}
       </View>
 
       <View style={styles.totalCard}>
@@ -129,22 +209,110 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 15,
   },
-  totalCard: {
+  statisticsCard: {
     backgroundColor: '#4f6df5',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+  },
+  statisticsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  statisticsTitle: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  statisticsRefresh: {
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  statisticsRefreshDisabled: {
+    opacity: 0.6,
+  },
+  statisticsRefreshText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  statisticsTable: {
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  statisticsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  statisticsKey: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 13,
+    fontWeight: '500',
+    marginRight: 12,
+  },
+  statisticsValue: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+    flexShrink: 1,
+    textAlign: 'right',
+  },
+  statisticsEmpty: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 13,
+    textAlign: 'center',
+    paddingVertical: 6,
+  },
+  statisticsErrorBox: {
+    backgroundColor: 'rgba(214, 69, 69, 0.85)',
+    borderRadius: 8,
+    padding: 10,
+    alignItems: 'center',
+  },
+  statisticsErrorText: {
+    color: '#fff',
+    fontSize: 13,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  statisticsRetry: {
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 6,
+    backgroundColor: '#fff',
+  },
+  statisticsRetryText: {
+    color: '#d64545',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  totalCard: {
+    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e6e8ee',
   },
   totalLabel: {
-    color: 'rgba(255, 255, 255, 0.85)',
+    color: '#5a5f6e',
     fontSize: 14,
     fontWeight: '600',
   },
   totalValue: {
-    color: '#fff',
+    color: '#1f2330',
     fontSize: 20,
     fontWeight: '700',
   },

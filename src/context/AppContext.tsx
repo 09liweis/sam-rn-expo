@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import {
   Expense,
+  Statistics,
   Tab,
   Todo,
   User,
@@ -21,6 +22,7 @@ import {
 } from '../storage';
 import {
   ApiError,
+  fetchStatisticsRequest,
   fetchTodosRequest,
   fetchUserDetailRequest,
   loginRequest,
@@ -40,6 +42,11 @@ interface AppContextValue {
   todosLoading: boolean;
   todosError: string | null;
   fetchTodos: () => Promise<void>;
+  // statistics (server)
+  statistics: Statistics | null;
+  statisticsLoading: boolean;
+  statisticsError: string | null;
+  fetchStatistics: () => Promise<void>;
   // expenses (local)
   expenses: Expense[];
   addExpense: (title: string, amount: number) => void;
@@ -70,6 +77,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todosLoading, setTodosLoading] = useState(false);
   const [todosError, setTodosError] = useState<string | null>(null);
+  const [statistics, setStatistics] = useState<Statistics | null>(null);
+  const [statisticsLoading, setStatisticsLoading] = useState(false);
+  const [statisticsError, setStatisticsError] = useState<string | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   // On app open: if auth_token exists, fetch user detail to refresh state
@@ -121,6 +131,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     setTodos([]);
     setTodosError(null);
+    setStatistics(null);
+    setStatisticsError(null);
     setExpenses([]);
     setActiveTab('todo');
   }, []);
@@ -145,6 +157,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       }
     } finally {
       setTodosLoading(false);
+    }
+  }, [user?.token, logout]);
+
+  const fetchStatistics = useCallback(async () => {
+    setStatisticsLoading(true);
+    setStatisticsError(null);
+    try {
+      const currentToken = user?.token;
+      if (!currentToken) {
+        throw new ApiError('Not logged in');
+      }
+      const data = await fetchStatisticsRequest(currentToken);
+      setStatistics(data);
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : 'Failed to load statistics';
+      setStatisticsError(message);
+      if (err instanceof ApiError && err.status === 401) {
+        logout();
+      }
+    } finally {
+      setStatisticsLoading(false);
     }
   }, [user?.token, logout]);
 
@@ -176,6 +210,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       todosLoading,
       todosError,
       fetchTodos,
+      statistics,
+      statisticsLoading,
+      statisticsError,
+      fetchStatistics,
       expenses,
       addExpense,
       removeExpense,
@@ -191,6 +229,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       todosLoading,
       todosError,
       fetchTodos,
+      statistics,
+      statisticsLoading,
+      statisticsError,
+      fetchStatistics,
       expenses,
       addExpense,
       removeExpense,

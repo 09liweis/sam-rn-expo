@@ -27,6 +27,8 @@ export interface Expense {
 
 export type Tab = 'todo' | 'expense';
 
+export type Statistics = Record<string, unknown>;
+
 let counter = 0;
 
 export function generateId(): string {
