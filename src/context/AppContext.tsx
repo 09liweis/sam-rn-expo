@@ -22,10 +22,14 @@ import {
 } from '../storage';
 import {
   ApiError,
+  createTodoRequest,
+  deleteTodoRequest,
   fetchStatisticsRequest,
   fetchTodosRequest,
   fetchUserDetailRequest,
   loginRequest,
+  updateTodoRequest,
+  TodoUpdates,
 } from '../services/api';
 
 interface AppContextValue {
@@ -42,6 +46,9 @@ interface AppContextValue {
   todosLoading: boolean;
   todosError: string | null;
   fetchTodos: () => Promise<void>;
+  addTodo: (name: string) => Promise<void>;
+  updateTodo: (id: string, updates: TodoUpdates) => Promise<void>;
+  deleteTodo: (id: string) => Promise<void>;
   // statistics (server)
   statistics: StatisticsResponse | null;
   statisticsLoading: boolean;
@@ -160,6 +167,49 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user?.token, logout]);
 
+  const addTodo = useCallback(
+    async (name: string) => {
+      const currentToken = user?.token;
+      if (!currentToken) {
+        throw new ApiError('Not logged in');
+      }
+      const date = new Date().toISOString().slice(0, 10);
+      const created = await createTodoRequest(currentToken, {
+        name,
+        date,
+        status: 'pending',
+      });
+      setTodos((prev) => [created, ...prev]);
+    },
+    [user?.token],
+  );
+
+  const updateTodo = useCallback(
+    async (id: string, updates: TodoUpdates) => {
+      const currentToken = user?.token;
+      if (!currentToken) {
+        throw new ApiError('Not logged in');
+      }
+      const updated = await updateTodoRequest(currentToken, id, updates);
+      setTodos((prev) =>
+        prev.map((t) => (t._id === id ? { ...t, ...updated } : t)),
+      );
+    },
+    [user?.token],
+  );
+
+  const deleteTodo = useCallback(
+    async (id: string) => {
+      const currentToken = user?.token;
+      if (!currentToken) {
+        throw new ApiError('Not logged in');
+      }
+      await deleteTodoRequest(currentToken, id);
+      setTodos((prev) => prev.filter((t) => t._id !== id));
+    },
+    [user?.token],
+  );
+
   const fetchStatistics = useCallback(async () => {
     setStatisticsLoading(true);
     setStatisticsError(null);
@@ -210,6 +260,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       todosLoading,
       todosError,
       fetchTodos,
+      addTodo,
+      updateTodo,
+      deleteTodo,
       statistics,
       statisticsLoading,
       statisticsError,
@@ -229,6 +282,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       todosLoading,
       todosError,
       fetchTodos,
+      addTodo,
+      updateTodo,
+      deleteTodo,
       statistics,
       statisticsLoading,
       statisticsError,

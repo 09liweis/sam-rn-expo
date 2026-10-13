@@ -85,6 +85,63 @@ export async function fetchTodosRequest(token: string): Promise<Todo[]> {
   return todos as Todo[];
 }
 
+function extractTodo(data: Record<string, unknown>): Todo {
+  // Accept either {todo: {...}} or a flat todo object
+  if (data.todo && typeof data.todo === 'object') {
+    return data.todo as unknown as Todo;
+  }
+  return data as unknown as Todo;
+}
+
+export interface TodoInput {
+  name: string;
+  date: string;
+  status: string;
+}
+
+export async function createTodoRequest(
+  token: string,
+  todo: TodoInput,
+): Promise<Todo> {
+  const data = await request('/api/todos', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(todo),
+  });
+  return extractTodo(data);
+}
+
+export type TodoUpdates = Partial<Pick<Todo, 'name' | 'date' | 'status'>>;
+
+export async function updateTodoRequest(
+  token: string,
+  id: string,
+  updates: TodoUpdates,
+): Promise<Todo> {
+  const data = await request(`/api/todos/${id}`, {
+    method: 'PUT',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(updates),
+  });
+  return extractTodo(data);
+}
+
+export async function deleteTodoRequest(
+  token: string,
+  id: string,
+): Promise<void> {
+  await request(`/api/todos/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 export async function fetchUserDetailRequest(token: string): Promise<UserDetail> {
   const data = await request('/api/user/detail', {
     method: 'POST',
