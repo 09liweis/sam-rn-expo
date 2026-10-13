@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useApp } from '../context/AppContext';
 import DateField, { toISODate } from '../components/DateField';
+import { theme } from '../theme';
 import { Todo } from '../types';
 
 const DONE_VALUES = ['done', 'completed', 'true', 'finished'];
@@ -26,6 +27,7 @@ function formatDate(date: string): string {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
   return d.toLocaleDateString(undefined, {
+    weekday: 'short',
     month: 'short',
     day: 'numeric',
   });
@@ -45,12 +47,10 @@ export default function TodoScreen() {
 
   const today = toISODate(new Date());
 
-  // Add form
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(today);
   const [adding, setAdding] = useState(false);
 
-  // Edit form
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const [editDate, setEditDate] = useState(today);
@@ -135,19 +135,10 @@ export default function TodoScreen() {
     const editing = editingId === item._id;
 
     return (
-      <View style={styles.row}>
+      <View style={[styles.row, cardShadow.shadow, editing && styles.rowEditing]}>
         {editing ? (
           <View style={styles.editContainer}>
             <View style={styles.editRow}>
-              {busy ? (
-                <ActivityIndicator
-                  size="small"
-                  color="#4f6df5"
-                  style={styles.editSpinner}
-                />
-              ) : (
-                <Text style={styles.editLabel}>✎</Text>
-              )}
               <TextInput
                 style={styles.editInput}
                 value={editText}
@@ -156,31 +147,32 @@ export default function TodoScreen() {
                 onSubmitEditing={() => void saveEdit()}
                 returnKeyType="done"
               />
+              {busy ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : null}
             </View>
             <View style={styles.editRow}>
               <DateField value={editDate} onChange={setEditDate} />
-              <Pressable
-                style={[styles.miniButton, styles.saveButton]}
-                onPress={() => void saveEdit()}
-              >
-                <Text style={styles.saveText}>Save</Text>
-              </Pressable>
-              <Pressable
-                style={[styles.miniButton, styles.cancelButton]}
-                onPress={cancelEdit}
-              >
-                <Text style={styles.cancelText}>Cancel</Text>
-              </Pressable>
+              <View style={styles.editButtons}>
+                <Pressable
+                  style={[styles.miniButton, styles.saveButton]}
+                  onPress={() => void saveEdit()}
+                >
+                  <Text style={styles.saveText}>Save</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.miniButton, styles.cancelButton]}
+                  onPress={cancelEdit}
+                >
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         ) : (
           <>
             {busy ? (
-              <ActivityIndicator
-                size="small"
-                color="#4f6df5"
-                style={styles.spinner}
-              />
+              <ActivityIndicator size="small" color={theme.primary} />
             ) : (
               <Pressable
                 style={[styles.checkbox, done && styles.checkboxDone]}
@@ -194,7 +186,10 @@ export default function TodoScreen() {
               <Text style={[styles.rowTitle, done && styles.rowTitleDone]}>
                 {item.name}
               </Text>
-              <Text style={styles.rowDate}>{formatDate(item.date)}</Text>
+              <View style={styles.rowMeta}>
+                <Text style={styles.rowDateIcon}>📅</Text>
+                <Text style={styles.rowDate}>{formatDate(item.date)}</Text>
+              </View>
             </View>
             <Pressable
               style={styles.iconButton}
@@ -210,7 +205,7 @@ export default function TodoScreen() {
               disabled={busy}
               accessibilityLabel="Delete todo"
             >
-              <Text style={styles.deleteText}>✕</Text>
+              <Text style={styles.iconDelete}>🗑</Text>
             </Pressable>
           </>
         )}
@@ -222,10 +217,11 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputCard}>
+      <View style={[styles.addCard, cardShadow.shadow]}>
         <TextInput
-          style={styles.input}
-          placeholder="New todo…"
+          style={styles.addInput}
+          placeholder="What needs to be done?"
+          placeholderTextColor={theme.textFaint}
           value={newTitle}
           onChangeText={setNewTitle}
           onSubmitEditing={() => void handleAdd()}
@@ -234,14 +230,17 @@ export default function TodoScreen() {
         <View style={styles.addControls}>
           <DateField value={newDate} onChange={setNewDate} />
           <Pressable
-            style={[styles.addButton, adding && styles.addButtonDisabled]}
+            style={({ pressed }) => [
+              styles.addButton,
+              (adding || pressed) && styles.addButtonPressed,
+            ]}
             onPress={() => void handleAdd()}
             disabled={adding}
           >
             {adding ? (
               <ActivityIndicator size="small" color="#fff" />
             ) : (
-              <Text style={styles.addButtonText}>Add</Text>
+              <Text style={styles.addButtonText}>＋ Add</Text>
             )}
           </Pressable>
         </View>
@@ -250,33 +249,40 @@ export default function TodoScreen() {
       {actionError ? (
         <View style={styles.actionErrorBox}>
           <Text style={styles.actionErrorText}>{actionError}</Text>
-          <Pressable onPress={() => setActionError(null)}>
+          <Pressable onPress={() => setActionError(null)} hitSlop={8}>
             <Text style={styles.dismissText}>✕</Text>
           </Pressable>
         </View>
       ) : null}
 
       <View style={styles.toolbar}>
-        <Text style={styles.toolbarTitle}>
-          {todosLoading
-            ? 'Loading…'
-            : `${todos.length} todo${todos.length === 1 ? '' : 's'} · ${remaining} remaining`}
-        </Text>
+        <View>
+          <Text style={styles.toolbarTitle}>My Todos</Text>
+          <Text style={styles.toolbarSubtitle}>
+            {todos.length === 0
+              ? 'Nothing here yet'
+              : `${remaining} of ${todos.length} remaining`}
+          </Text>
+        </View>
         <Pressable
-          style={[styles.refreshButton, todosLoading && styles.refreshDisabled]}
+          style={({ pressed }) => [
+            styles.refreshButton,
+            (todosLoading || pressed) && styles.refreshPressed,
+          ]}
           onPress={() => void fetchTodos()}
           disabled={todosLoading}
         >
           {todosLoading ? (
-            <ActivityIndicator size="small" color="#4f6df5" />
+            <ActivityIndicator size="small" color={theme.primary} />
           ) : (
-            <Text style={styles.refreshText}>↻ Refresh</Text>
+            <Text style={styles.refreshText}>↻</Text>
           )}
         </Pressable>
       </View>
 
       {todosError ? (
-        <View style={styles.errorBox}>
+        <View style={[styles.errorBox, cardShadow.shadow]}>
+          <Text style={styles.errorEmoji}>⚠️</Text>
           <Text style={styles.errorText}>{todosError}</Text>
           <Pressable
             style={styles.retryButton}
@@ -308,25 +314,38 @@ export default function TodoScreen() {
   );
 }
 
+const cardShadow = StyleSheet.create({
+  shadow: {
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#f5f6fa',
+    padding: 20,
+    backgroundColor: theme.bg,
   },
-  inputCard: {
-    gap: 8,
-    marginBottom: 12,
+  addCard: {
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
+    padding: 14,
+    gap: 10,
+    marginBottom: 16,
   },
-  input: {
+  addInput: {
     borderWidth: 1,
-    borderColor: '#d9dce3',
-    borderRadius: 10,
+    borderColor: theme.border,
+    borderRadius: theme.radius.md,
     paddingHorizontal: 14,
-    paddingVertical: 10,
-    fontSize: 15,
-    backgroundColor: '#fff',
-    color: '#1f2330',
+    paddingVertical: 11,
+    fontSize: theme.font.body,
+    backgroundColor: theme.bg,
+    color: theme.ink,
   },
   addControls: {
     flexDirection: 'row',
@@ -334,39 +353,39 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   addButton: {
-    backgroundColor: '#4f6df5',
-    borderRadius: 10,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    backgroundColor: theme.primary,
+    borderRadius: theme.radius.md,
+    paddingHorizontal: 20,
+    paddingVertical: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  addButtonDisabled: {
-    opacity: 0.7,
+  addButtonPressed: {
+    opacity: 0.85,
   },
   addButtonText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
+    fontWeight: '800',
+    fontSize: theme.font.body,
   },
   actionErrorBox: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fdeaea',
-    borderRadius: 10,
+    backgroundColor: theme.redSoft,
+    borderRadius: theme.radius.sm,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 10,
+    marginBottom: 12,
   },
   actionErrorText: {
-    color: '#d64545',
-    fontSize: 13,
+    color: theme.red,
+    fontSize: theme.font.caption,
     flex: 1,
   },
   dismissText: {
-    color: '#d64545',
-    fontSize: 14,
+    color: theme.red,
+    fontSize: theme.font.body,
     fontWeight: '700',
     paddingLeft: 10,
   },
@@ -374,116 +393,135 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
+    paddingHorizontal: 2,
   },
   toolbarTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#5a5f6e',
+    color: theme.ink,
+    fontSize: theme.font.title,
+    fontWeight: '800',
+  },
+  toolbarSubtitle: {
+    color: theme.textFaint,
+    fontSize: theme.font.caption,
+    marginTop: 1,
   },
   refreshButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#4f6df5',
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: theme.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  refreshDisabled: {
-    opacity: 0.6,
+  refreshPressed: {
+    opacity: 0.7,
   },
   refreshText: {
-    color: '#4f6df5',
-    fontSize: 12,
+    color: theme.primary,
+    fontSize: 18,
     fontWeight: '700',
   },
   errorBox: {
-    backgroundColor: '#fdeaea',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
+    padding: 20,
+    marginBottom: 12,
     alignItems: 'center',
   },
+  errorEmoji: {
+    fontSize: 28,
+    marginBottom: 6,
+  },
   errorText: {
-    color: '#d64545',
-    fontSize: 13,
-    marginBottom: 8,
+    color: theme.red,
+    fontSize: theme.font.caption,
+    marginBottom: 10,
     textAlign: 'center',
   },
   retryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: '#d64545',
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.red,
   },
   retryText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: theme.font.caption,
     fontWeight: '700',
   },
   row: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
     paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: '#e6e8ee',
+    paddingVertical: 14,
+    marginBottom: 10,
   },
-  spinner: {
-    width: 24,
-    height: 24,
-    marginRight: 12,
+  rowEditing: {
+    borderWidth: 1.5,
+    borderColor: theme.primary,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
+    width: 26,
+    height: 26,
+    borderRadius: 9,
     borderWidth: 2,
-    borderColor: '#4f6df5',
+    borderColor: theme.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   checkboxDone: {
-    backgroundColor: '#4f6df5',
-    borderColor: '#4f6df5',
+    backgroundColor: theme.green,
+    borderColor: theme.green,
   },
   checkmark: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
-    lineHeight: 18,
+    fontWeight: '800',
+    fontSize: theme.font.body,
+    lineHeight: 20,
   },
   rowBody: {
     flex: 1,
     marginRight: 8,
   },
   rowTitle: {
-    fontSize: 15,
-    color: '#1f2330',
-    fontWeight: '500',
+    fontSize: theme.font.body,
+    color: theme.text,
+    fontWeight: '600',
   },
   rowTitleDone: {
-    color: '#a5aab5',
+    color: theme.textFaint,
     textDecorationLine: 'line-through',
   },
+  rowMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 3,
+  },
+  rowDateIcon: {
+    fontSize: 10,
+  },
   rowDate: {
-    fontSize: 12,
-    color: '#a5aab5',
-    marginTop: 2,
+    fontSize: theme.font.micro,
+    color: theme.textFaint,
+    fontWeight: '500',
   },
   iconButton: {
-    padding: 8,
+    padding: 7,
   },
   iconText: {
-    color: '#5a5f6e',
-    fontSize: 14,
+    color: theme.textFaint,
+    fontSize: theme.font.body,
   },
-  deleteText: {
-    color: '#d64545',
-    fontSize: 14,
+  iconDelete: {
+    fontSize: theme.font.caption,
   },
   editContainer: {
+    flex: 1,
     gap: 8,
   },
   editRow: {
@@ -491,47 +529,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  editSpinner: {
-    width: 20,
-    height: 20,
-  },
-  editLabel: {
-    color: '#5a5f6e',
-    fontSize: 14,
-    width: 20,
-    textAlign: 'center',
-  },
   editInput: {
     flex: 1,
     borderWidth: 1,
-    borderColor: '#4f6df5',
-    borderRadius: 8,
+    borderColor: theme.primary,
+    borderRadius: theme.radius.sm,
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    fontSize: 14,
-    color: '#1f2330',
-    backgroundColor: '#fafbff',
+    paddingVertical: 8,
+    fontSize: theme.font.body,
+    color: theme.ink,
+    backgroundColor: theme.bg,
+  },
+  editButtons: {
+    flexDirection: 'row',
+    gap: 6,
   },
   miniButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: theme.radius.sm,
   },
   saveButton: {
-    backgroundColor: '#4f6df5',
+    backgroundColor: theme.primary,
   },
   saveText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: theme.font.caption,
     fontWeight: '700',
   },
   cancelButton: {
     borderWidth: 1,
-    borderColor: '#d9dce3',
+    borderColor: theme.border,
   },
   cancelText: {
-    color: '#5a5f6e',
-    fontSize: 12,
+    color: theme.textSoft,
+    fontSize: theme.font.caption,
     fontWeight: '600',
   },
   empty: {
@@ -543,17 +575,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyEmoji: {
-    fontSize: 36,
-    marginBottom: 6,
+    fontSize: 42,
+    marginBottom: 8,
   },
   emptyText: {
-    color: '#5a5f6e',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.textSoft,
+    fontSize: theme.font.body,
+    fontWeight: '700',
   },
   emptyHint: {
-    color: '#a5aab5',
-    fontSize: 12,
+    color: theme.textFaint,
+    fontSize: theme.font.caption,
     marginTop: 4,
   },
 });

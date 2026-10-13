@@ -7,53 +7,38 @@ import {
   Text,
   View,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useApp } from '../context/AppContext';
+import { theme } from '../theme';
 import { StatisticsCategory, StatisticsItem } from '../types';
 
-// ---------- Color helpers ----------
-const COLORS = {
-  income: '#1faa5a',
-  incomeBg: '#e8f8ee',
-  expense: '#e74c5c',
-  expenseBg: '#fdeaea',
-  total: '#4f6df5',
-  totalBg: '#e8ecfd',
-  text: '#1f2330',
-  textMuted: '#8a8f9e',
-  textSubtle: '#a5aab5',
-  border: '#e6e8ee',
-  surface: '#ffffff',
-  background: '#f5f6fa',
-  trackBg: '#eef0f5',
+const CATEGORY_STYLE: Record<string, { icon: string; tint: string; soft: string }> = {
+  grocery: { icon: '🛒', tint: '#10B981', soft: '#ECFDF5' },
+  food: { icon: '🍔', tint: '#F59E0B', soft: '#FFFBEB' },
+  restaurant: { icon: '🍽️', tint: '#F59E0B', soft: '#FFFBEB' },
+  health: { icon: '🏥', tint: '#EF4444', soft: '#FEF2F2' },
+  medical: { icon: '💊', tint: '#EF4444', soft: '#FEF2F2' },
+  internet: { icon: '🌐', tint: '#6366F1', soft: '#EEF0FE' },
+  phone: { icon: '📱', tint: '#6366F1', soft: '#EEF0FE' },
+  utility: { icon: '💡', tint: '#F59E0B', soft: '#FFFBEB' },
+  fuel: { icon: '⛽', tint: '#0EA5E9', soft: '#E0F2FE' },
+  gas: { icon: '⛽', tint: '#0EA5E9', soft: '#E0F2FE' },
+  transport: { icon: '🚗', tint: '#0EA5E9', soft: '#E0F2FE' },
+  shopping: { icon: '🛍️', tint: '#8B5CF6', soft: '#F5F3FF' },
+  entertainment: { icon: '🎬', tint: '#8B5CF6', soft: '#F5F3FF' },
+  rent: { icon: '🏠', tint: '#6366F1', soft: '#EEF0FE' },
+  housing: { icon: '🏠', tint: '#6366F1', soft: '#EEF0FE' },
+  salary: { icon: '💰', tint: '#10B981', soft: '#ECFDF5' },
+  income: { icon: '💰', tint: '#10B981', soft: '#ECFDF5' },
+  refund: { icon: '↩️', tint: '#10B981', soft: '#ECFDF5' },
+  education: { icon: '📚', tint: '#6366F1', soft: '#EEF0FE' },
+  travel: { icon: '✈️', tint: '#0EA5E9', soft: '#E0F2FE' },
+  fitness: { icon: '🏋️', tint: '#10B981', soft: '#ECFDF5' },
+  default: { icon: '💸', tint: '#6B7280', soft: '#F3F4F6' },
 };
 
-const CATEGORY_ICON: Record<string, string> = {
-  grocery: '🛒',
-  food: '🍔',
-  restaurant: '🍽️',
-  health: '🏥',
-  medical: '💊',
-  internet: '🌐',
-  phone: '📱',
-  utility: '💡',
-  fuel: '⛽',
-  gas: '⛽',
-  transport: '🚗',
-  shopping: '🛍️',
-  entertainment: '🎬',
-  rent: '🏠',
-  housing: '🏠',
-  salary: '💰',
-  income: '💰',
-  refund: '↩️',
-  education: '📚',
-  travel: '✈️',
-  fitness: '🏋️',
-  default: '💸',
-};
-
-function categoryIcon(name: string): string {
-  return CATEGORY_ICON[name.toLowerCase()] ?? CATEGORY_ICON.default;
+function categoryStyle(name: string) {
+  return CATEGORY_STYLE[name.toLowerCase()] ?? CATEGORY_STYLE.default;
 }
 
 function parsePercentage(percentage: string): number {
@@ -64,7 +49,6 @@ function parsePercentage(percentage: string): number {
 }
 
 function formatMonth(date: string): string {
-  // "2026-10" -> "October 2026"
   const d = new Date(`${date}-01T00:00:00`);
   if (Number.isNaN(d.getTime())) return date;
   return d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
@@ -73,39 +57,33 @@ function formatMonth(date: string): string {
 function formatItemDate(date: string): string {
   const d = new Date(date);
   if (Number.isNaN(d.getTime())) return date;
-  return d.toLocaleDateString(undefined, {
-    month: 'short',
-    day: 'numeric',
-  });
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-// ---------- Metric tile ----------
 function MetricTile({
   label,
   value,
-  color,
-  bg,
+  icon,
 }: {
   label: string;
   value: string;
-  color: string;
-  bg: string;
+  icon: string;
 }) {
   return (
-    <View style={[styles.metricTile, { backgroundColor: bg }]}>
-      <Text style={[styles.metricLabel, { color }]}>{label}</Text>
-      <Text style={[styles.metricValue, { color }]}>{value}</Text>
+    <View style={styles.metricTile}>
+      <Text style={styles.metricIcon}>{icon}</Text>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
     </View>
   );
 }
 
-// ---------- Item row ----------
 function ItemRow({ item }: { item: StatisticsItem }) {
   const positive = item.income;
-  const accent = positive ? COLORS.income : COLORS.expense;
-  const accentBg = positive ? COLORS.incomeBg : COLORS.expenseBg;
+  const accent = positive ? theme.green : theme.red;
+  const accentBg = positive ? theme.greenSoft : theme.redSoft;
   const titleText = item.title || item.place?.name || item.category;
-  const subtitle = item.place?.address;
+  const subtitle = item.place?.name && item.title ? item.place.name : item.place?.address;
 
   return (
     <View style={styles.itemRow}>
@@ -119,18 +97,19 @@ function ItemRow({ item }: { item: StatisticsItem }) {
             {subtitle}
           </Text>
         ) : null}
-        <Text style={styles.itemDate}>{formatItemDate(item.date)}</Text>
       </View>
-      <View style={[styles.itemPriceBadge, { backgroundColor: accentBg }]}>
-        <Text style={[styles.itemPrice, { color: accent }]}>
-          {item.formatedPrice}
-        </Text>
+      <View style={styles.itemRight}>
+        <View style={[styles.itemPriceBadge, { backgroundColor: accentBg }]}>
+          <Text style={[styles.itemPrice, { color: accent }]}>
+            {item.formatedPrice}
+          </Text>
+        </View>
+        <Text style={styles.itemDate}>{formatItemDate(item.date)}</Text>
       </View>
     </View>
   );
 }
 
-// ---------- Category card ----------
 function CategoryCard({
   category,
   index,
@@ -140,21 +119,20 @@ function CategoryCard({
 }) {
   const [expanded, setExpanded] = useState(index < 2);
   const isIncome = category.income;
-  const accent = isIncome ? COLORS.income : COLORS.expense;
-  const accentBg = isIncome ? COLORS.incomeBg : COLORS.expenseBg;
+  const accent = isIncome ? theme.green : categoryStyle(category.category).tint;
+  const accentBg = isIncome ? theme.greenSoft : categoryStyle(category.category).soft;
   const pct = parsePercentage(category.percentage);
+  const meta = categoryStyle(category.category);
   const itemsCount = category.items.length;
 
   return (
-    <View style={styles.categoryCard}>
+    <View style={[styles.categoryCard, cardShadow.shadow]}>
       <Pressable
         style={styles.categoryHeader}
         onPress={() => setExpanded((v) => !v)}
       >
-        <View style={[styles.categoryIcon, { backgroundColor: accentBg }]}>
-          <Text style={styles.categoryIconText}>
-            {categoryIcon(category.category)}
-          </Text>
+        <View style={[styles.categoryIcon, { backgroundColor: meta.soft }]}>
+          <Text style={styles.categoryIconText}>{meta.icon}</Text>
         </View>
         <View style={styles.categoryInfo}>
           <View style={styles.categoryTopRow}>
@@ -162,13 +140,9 @@ function CategoryCard({
               {category.category.charAt(0).toUpperCase() +
                 category.category.slice(1)}
             </Text>
-            <View
-              style={[styles.categoryBadge, { backgroundColor: accentBg }]}
-            >
-              <Text style={[styles.categoryBadgeText, { color: accent }]}>
-                {category.percentage}
-              </Text>
-            </View>
+            <Text style={[styles.categoryTotal, { color: accent }]}>
+              {category.total}
+            </Text>
           </View>
           <View style={styles.progressTrack}>
             <View
@@ -185,8 +159,8 @@ function CategoryCard({
             <Text style={styles.categoryItemsCount}>
               {itemsCount} item{itemsCount === 1 ? '' : 's'}
             </Text>
-            <Text style={[styles.categoryTotal, { color: accent }]}>
-              {category.total}
+            <Text style={[styles.categoryPct, { color: accent }]}>
+              {category.percentage}
             </Text>
           </View>
         </View>
@@ -204,7 +178,6 @@ function CategoryCard({
   );
 }
 
-// ---------- Screen ----------
 export default function ExpenseScreen() {
   const {
     statistics,
@@ -230,56 +203,47 @@ export default function ExpenseScreen() {
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
     >
-      <View style={styles.headerCard}>
+      <LinearGradient
+        colors={[theme.primaryDark, theme.primary, theme.violet]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.headerCard}
+      >
         <View style={styles.headerTopRow}>
           <View>
-            <Text style={styles.headerLabel}>Monthly summary</Text>
+            <Text style={styles.headerLabel}>MONTHLY SUMMARY</Text>
             <Text style={styles.headerTitle}>
               {statistics ? formatMonth(statistics.date) : '—'}
             </Text>
           </View>
           <Pressable
-            style={[
+            style={({ pressed }) => [
               styles.refreshButton,
-              statisticsLoading && styles.refreshDisabled,
+              (statisticsLoading || pressed) && styles.refreshPressed,
             ]}
             onPress={() => void fetchStatistics()}
             disabled={statisticsLoading}
           >
             {statisticsLoading ? (
-              <ActivityIndicator size="small" color={COLORS.total} />
+              <ActivityIndicator size="small" color={theme.primaryDark} />
             ) : (
-              <Text style={styles.refreshText}>↻ Refresh</Text>
+              <Text style={styles.refreshText}>↻</Text>
             )}
           </Pressable>
         </View>
 
         {statistics ? (
           <View style={styles.metricsRow}>
-            <MetricTile
-              label="Incomes"
-              value={statistics.incomes}
-              color={COLORS.income}
-              bg={COLORS.incomeBg}
-            />
-            <MetricTile
-              label="Expenses"
-              value={statistics.expenses}
-              color={COLORS.expense}
-              bg={COLORS.expenseBg}
-            />
-            <MetricTile
-              label="Total"
-              value={statistics.total}
-              color={COLORS.total}
-              bg={COLORS.totalBg}
-            />
+            <MetricTile label="Incomes" value={statistics.incomes} icon="↓" />
+            <MetricTile label="Expenses" value={statistics.expenses} icon="↑" />
+            <MetricTile label="Net" value={statistics.total} icon="Σ" />
           </View>
         ) : null}
-      </View>
+      </LinearGradient>
 
       {statisticsError ? (
-        <View style={styles.errorBox}>
+        <View style={[styles.errorBox, cardShadow.shadow]}>
+          <Text style={styles.errorEmoji}>⚠️</Text>
           <Text style={styles.errorText}>{statisticsError}</Text>
           <Pressable
             style={styles.retryButton}
@@ -291,25 +255,27 @@ export default function ExpenseScreen() {
       ) : null}
 
       {!statistics && statisticsLoading ? (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={COLORS.total} />
+        <View style={[styles.loadingBox, cardShadow.shadow]}>
+          <ActivityIndicator size="large" color={theme.primary} />
           <Text style={styles.loadingText}>Loading statistics…</Text>
         </View>
       ) : null}
 
       {statistics && categories.length === 0 ? (
-        <View style={styles.emptyBox}>
+        <View style={[styles.emptyBox, cardShadow.shadow]}>
           <Text style={styles.emptyEmoji}>📊</Text>
           <Text style={styles.emptyText}>No categories this month</Text>
         </View>
       ) : null}
 
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Categories</Text>
-        <Text style={styles.sectionCount}>
-          {categories.length} total
-        </Text>
-      </View>
+      {categories.length > 0 ? (
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Categories</Text>
+          <Text style={styles.sectionCount}>
+            {categories.length} total
+          </Text>
+        </View>
+      ) : null}
 
       {categories.map((cat, idx) => (
         <CategoryCard key={cat.category + idx} category={cat} index={idx} />
@@ -320,57 +286,61 @@ export default function ExpenseScreen() {
   );
 }
 
+const cardShadow = StyleSheet.create({
+  shadow: {
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+});
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: theme.bg,
   },
   contentContainer: {
-    padding: 16,
+    padding: 20,
   },
   headerCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: theme.radius.xl,
+    padding: 20,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
   },
   headerTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 14,
+    marginBottom: 16,
   },
   headerLabel: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: theme.font.micro,
+    fontWeight: '800',
+    letterSpacing: 1.2,
   },
   headerTitle: {
-    color: COLORS.text,
-    fontSize: 22,
-    fontWeight: '700',
+    color: '#fff',
+    fontSize: theme.font.hero,
+    fontWeight: '800',
     marginTop: 2,
   },
   refreshButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.total,
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  refreshDisabled: {
-    opacity: 0.6,
+  refreshPressed: {
+    opacity: 0.75,
   },
   refreshText: {
-    color: COLORS.total,
-    fontSize: 12,
+    color: theme.primaryDark,
+    fontSize: 18,
     fontWeight: '700',
   },
   metricsRow: {
@@ -379,59 +349,74 @@ const styles = StyleSheet.create({
   },
   metricTile: {
     flex: 1,
-    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.16)',
+    borderRadius: theme.radius.md,
     padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  metricLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
+  metricIcon: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: theme.font.caption,
+    fontWeight: '800',
   },
   metricValue: {
-    fontSize: 16,
-    fontWeight: '700',
+    color: '#fff',
+    fontSize: theme.font.body,
+    fontWeight: '800',
     marginTop: 4,
   },
+  metricLabel: {
+    color: 'rgba(255, 255, 255, 0.75)',
+    fontSize: theme.font.micro,
+    fontWeight: '600',
+    marginTop: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
   errorBox: {
-    backgroundColor: COLORS.expenseBg,
-    borderRadius: 12,
-    padding: 14,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
+    padding: 20,
     marginBottom: 12,
     alignItems: 'center',
   },
+  errorEmoji: {
+    fontSize: 28,
+    marginBottom: 6,
+  },
   errorText: {
-    color: COLORS.expense,
-    fontSize: 13,
-    marginBottom: 8,
+    color: theme.red,
+    fontSize: theme.font.caption,
+    marginBottom: 10,
     textAlign: 'center',
   },
   retryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: COLORS.expense,
+    paddingHorizontal: 18,
+    paddingVertical: 8,
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.red,
   },
   retryText: {
     color: '#fff',
-    fontSize: 12,
+    fontSize: theme.font.caption,
     fontWeight: '700',
   },
   loadingBox: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
     padding: 28,
     marginBottom: 12,
     alignItems: 'center',
   },
   loadingText: {
-    color: COLORS.textMuted,
-    fontSize: 13,
+    color: theme.textFaint,
+    fontSize: theme.font.caption,
     marginTop: 8,
   },
   emptyBox: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
     padding: 28,
     marginBottom: 12,
     alignItems: 'center',
@@ -441,46 +426,44 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
   emptyText: {
-    color: COLORS.textMuted,
-    fontSize: 14,
+    color: theme.textSoft,
+    fontSize: theme.font.body,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 10,
-    paddingHorizontal: 4,
+    marginBottom: 12,
+    paddingHorizontal: 2,
   },
   sectionTitle: {
-    color: COLORS.text,
-    fontSize: 15,
-    fontWeight: '700',
+    color: theme.ink,
+    fontSize: theme.font.title,
+    fontWeight: '800',
   },
   sectionCount: {
-    color: COLORS.textMuted,
-    fontSize: 12,
+    color: theme.textFaint,
+    fontSize: theme.font.caption,
     fontWeight: '600',
   },
   categoryCard: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 14,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
     marginBottom: 10,
     overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: COLORS.border,
   },
   categoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: 16,
   },
   categoryIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   categoryIconText: {
     fontSize: 22,
@@ -494,22 +477,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   categoryName: {
-    color: COLORS.text,
-    fontSize: 15,
-    fontWeight: '700',
+    color: theme.ink,
+    fontSize: theme.font.body,
+    fontWeight: '800',
   },
-  categoryBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 6,
-  },
-  categoryBadgeText: {
-    fontSize: 11,
-    fontWeight: '700',
+  categoryTotal: {
+    fontSize: theme.font.body,
+    fontWeight: '800',
   },
   progressTrack: {
-    height: 5,
-    backgroundColor: COLORS.trackBg,
+    height: 6,
+    backgroundColor: theme.track,
     borderRadius: 3,
     marginTop: 10,
     overflow: 'hidden',
@@ -522,33 +500,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 8,
+    marginTop: 7,
   },
   categoryItemsCount: {
-    color: COLORS.textMuted,
-    fontSize: 12,
+    color: theme.textFaint,
+    fontSize: theme.font.micro,
+    fontWeight: '500',
   },
-  categoryTotal: {
-    fontSize: 14,
-    fontWeight: '700',
+  categoryPct: {
+    fontSize: theme.font.micro,
+    fontWeight: '800',
   },
   categoryChevron: {
-    color: COLORS.textMuted,
-    fontSize: 12,
-    marginLeft: 10,
+    color: theme.textFaint,
+    fontSize: 11,
+    marginLeft: 12,
   },
   itemsContainer: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: COLORS.border,
-    backgroundColor: '#fbfbfd',
+    borderTopColor: theme.borderSoft,
+    backgroundColor: '#FAFAFD',
   },
   itemRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
+    paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: COLORS.border,
+    borderBottomColor: theme.borderSoft,
   },
   itemDot: {
     width: 8,
@@ -561,27 +540,30 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   itemTitle: {
-    color: COLORS.text,
-    fontSize: 14,
+    color: theme.text,
+    fontSize: theme.font.caption + 1,
     fontWeight: '600',
   },
   itemSubtitle: {
-    color: COLORS.textSubtle,
-    fontSize: 12,
+    color: theme.textFaint,
+    fontSize: theme.font.micro,
     marginTop: 2,
   },
-  itemDate: {
-    color: COLORS.textMuted,
-    fontSize: 11,
-    marginTop: 3,
+  itemRight: {
+    alignItems: 'flex-end',
   },
   itemPriceBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 8,
+    paddingVertical: 4,
+    borderRadius: theme.radius.sm,
   },
   itemPrice: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: theme.font.caption,
+    fontWeight: '800',
+  },
+  itemDate: {
+    color: theme.textFaint,
+    fontSize: 10,
+    marginTop: 3,
   },
 });

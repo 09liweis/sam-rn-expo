@@ -12,6 +12,7 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 // Web-only helper exported by react-native-web
 import { unstable_createElement } from 'react-native-web';
+import { theme } from '../theme';
 
 interface DateFieldProps {
   /** ISO date string: YYYY-MM-DD */
@@ -131,35 +132,35 @@ export default function DateField(props: DateFieldProps) {
 const styles = StyleSheet.create({
   webInput: {
     borderWidth: 1,
-    borderColor: '#d9dce3',
-    borderRadius: 10,
+    borderColor: theme.border,
+    borderRadius: theme.radius.md,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 14,
-    color: '#1f2330',
-    backgroundColor: '#fff',
+    paddingVertical: 10,
+    fontSize: theme.font.body,
+    color: theme.ink,
+    backgroundColor: theme.bg,
   },
   pill: {
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#d9dce3',
-    borderRadius: 10,
+    borderColor: theme.border,
+    borderRadius: theme.radius.md,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    backgroundColor: '#fff',
+    paddingVertical: 10,
+    backgroundColor: theme.bg,
     gap: 6,
   },
   pillIcon: {
     fontSize: 14,
   },
   pillText: {
-    color: '#1f2330',
-    fontSize: 14,
+    color: theme.text,
+    fontSize: theme.font.body,
     fontWeight: '600',
   },
   pillChevron: {
-    color: '#a5aab5',
+    color: theme.textFaint,
     fontSize: 10,
     marginLeft: 2,
   },

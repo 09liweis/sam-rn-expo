@@ -1,60 +1,91 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppProvider, useApp } from './src/context/AppContext';
+import { theme } from './src/theme';
 import LoginScreen from './src/screens/LoginScreen';
 import TodoScreen from './src/screens/TodoScreen';
 import ExpenseScreen from './src/screens/ExpenseScreen';
 
 const TABS = [
-  { key: 'todo', label: 'Todos' },
-  { key: 'expense', label: 'Expenses' },
+  { key: 'todo', label: '📋 Todos' },
+  { key: 'expense', label: '📊 Expenses' },
 ] as const;
+
+function greeting(): string {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 18) return 'Good afternoon';
+  return 'Good evening';
+}
 
 function Header() {
   const { user, logout } = useApp();
+  const name = user?.email.split('@')[0] ?? '';
   return (
     <View style={styles.header}>
-      <View style={styles.headerUserInfo}>
-        <View style={styles.avatar}>
+      <View style={styles.headerLeft}>
+        <LinearGradient
+          colors={[theme.primary, theme.violet]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.avatar}
+        >
           <Text style={styles.avatarText}>
-            {user?.email.charAt(0).toUpperCase()}
+            {(name || 'U').charAt(0).toUpperCase()}
+          </Text>
+        </LinearGradient>
+        <View>
+          <Text style={styles.greeting}>{greeting()}</Text>
+          <Text style={styles.userName} numberOfLines={1}>
+            {name || user?.email}
           </Text>
         </View>
-        <Text style={styles.headerUsername} numberOfLines={1}>
-          {user?.email}
-        </Text>
       </View>
-      <Pressable style={styles.logoutButton} onPress={logout}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.logoutButton,
+          pressed && styles.logoutPressed,
+        ]}
+        onPress={logout}
+      >
         <Text style={styles.logoutText}>Log out</Text>
       </Pressable>
     </View>
   );
 }
 
-function MainScreen() {
+function TabBar() {
   const { activeTab, setActiveTab } = useApp();
+  return (
+    <View style={styles.tabBar}>
+      {TABS.map((tab) => {
+        const active = activeTab === tab.key;
+        return (
+          <Pressable
+            key={tab.key}
+            style={[styles.tab, active && styles.tabActive]}
+            onPress={() => setActiveTab(tab.key)}
+          >
+            <Text style={[styles.tabLabel, active && styles.tabLabelActive]}>
+              {tab.label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function MainScreen() {
+  const { activeTab } = useApp();
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <Header />
-      <View style={styles.tabBar}>
-        {TABS.map((tab) => (
-          <Pressable
-            key={tab.key}
-            style={[styles.tab, activeTab === tab.key && styles.tabActive]}
-            onPress={() => setActiveTab(tab.key)}
-          >
-            <Text
-              style={[
-                styles.tabLabel,
-                activeTab === tab.key && styles.tabLabelActive,
-              ]}
-            >
-              {tab.label}
-            </Text>
-          </Pressable>
-        ))}
+      <View style={styles.tabBarWrap}>
+        <TabBar />
       </View>
       <View style={styles.content}>
         {activeTab === 'todo' ? <TodoScreen /> : <ExpenseScreen />}
@@ -68,7 +99,12 @@ function Root() {
   if (initializing) {
     return (
       <View style={styles.splash}>
-        <ActivityIndicator size="large" color="#4f6df5" />
+        <LinearGradient
+          colors={[theme.primary, theme.violet]}
+          style={styles.splashBadge}
+        >
+          <Text style={styles.splashBadgeText}>S</Text>
+        </LinearGradient>
       </View>
     );
   }
@@ -87,81 +123,112 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: theme.bg,
+  },
   splash: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#f5f6fa',
+    backgroundColor: theme.bg,
   },
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f6fa',
+  splashBadge: {
+    width: 72,
+    height: 72,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  splashBadgeText: {
+    color: '#fff',
+    fontSize: 32,
+    fontWeight: '800',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: 48,
-    paddingBottom: 12,
-    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingTop: 52,
+    paddingBottom: 14,
+    backgroundColor: theme.surface,
+    borderBottomLeftRadius: theme.radius.lg,
+    borderBottomRightRadius: theme.radius.lg,
   },
-  headerUserInfo: {
+  headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    flex: 1,
+    marginRight: 12,
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#4f6df5',
+    width: 44,
+    height: 44,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   avatarText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
   },
-  headerUsername: {
-    fontSize: 16,
+  greeting: {
+    color: theme.textFaint,
+    fontSize: theme.font.micro,
     fontWeight: '600',
-    color: '#1f2330',
+    textTransform: 'uppercase',
+    letterSpacing: 0.6,
+  },
+  userName: {
+    color: theme.ink,
+    fontSize: theme.font.title,
+    fontWeight: '800',
+    marginTop: 1,
   },
   logoutButton: {
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#d9dce3',
+    borderRadius: theme.radius.sm,
+    backgroundColor: theme.redSoft,
+  },
+  logoutPressed: {
+    opacity: 0.75,
   },
   logoutText: {
-    color: '#d64545',
-    fontSize: 13,
-    fontWeight: '600',
+    color: theme.red,
+    fontSize: theme.font.caption,
+    fontWeight: '700',
+  },
+  tabBarWrap: {
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    backgroundColor: theme.bg,
   },
   tabBar: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingBottom: 12,
-    gap: 8,
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.md,
+    padding: 4,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: theme.borderSoft,
   },
   tab: {
     flex: 1,
     paddingVertical: 10,
-    borderRadius: 10,
+    borderRadius: theme.radius.sm,
     alignItems: 'center',
-    backgroundColor: '#f0f1f5',
   },
   tabActive: {
-    backgroundColor: '#4f6df5',
+    backgroundColor: theme.primary,
   },
   tabLabel: {
-    color: '#5a5f6e',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.textSoft,
+    fontSize: theme.font.caption,
+    fontWeight: '700',
   },
   tabLabelActive: {
     color: '#fff',
