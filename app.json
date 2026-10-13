@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Sam Life",
-    "slug": "sam-life",
+    "slug": "sam-rn-expo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
