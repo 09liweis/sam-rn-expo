@@ -46,7 +46,7 @@ interface AppContextValue {
   todosLoading: boolean;
   todosError: string | null;
   fetchTodos: () => Promise<void>;
-  addTodo: (name: string) => Promise<void>;
+  addTodo: (name: string, date?: string) => Promise<void>;
   updateTodo: (id: string, updates: TodoUpdates) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
   // statistics (server)
@@ -168,15 +168,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, [user?.token, logout]);
 
   const addTodo = useCallback(
-    async (name: string) => {
+    async (name: string, date?: string) => {
       const currentToken = user?.token;
       if (!currentToken) {
         throw new ApiError('Not logged in');
       }
-      const date = new Date().toISOString().slice(0, 10);
+      const todoDate = date || new Date().toISOString().slice(0, 10);
       const created = await createTodoRequest(currentToken, {
         name,
-        date,
+        date: todoDate,
         status: 'pending',
       });
       setTodos((prev) => [created, ...prev]);

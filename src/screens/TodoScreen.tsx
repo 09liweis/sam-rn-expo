@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { useApp } from '../context/AppContext';
+import DateField, { toISODate } from '../components/DateField';
 import { Todo } from '../types';
 
 const DONE_VALUES = ['done', 'completed', 'true', 'finished'];
@@ -42,12 +43,20 @@ export default function TodoScreen() {
     user,
   } = useApp();
 
+  const today = toISODate(new Date());
+
+  // Add form
   const [newTitle, setNewTitle] = useState('');
+  const [newDate, setNewDate] = useState(today);
   const [adding, setAdding] = useState(false);
-  const [actionError, setActionError] = useState<string | null>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
+
+  // Edit form
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
+  const [editDate, setEditDate] = useState(today);
+
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -73,8 +82,9 @@ export default function TodoScreen() {
     setAdding(true);
     setActionError(null);
     try {
-      await addTodo(name);
+      await addTodo(name, newDate);
       setNewTitle('');
+      setNewDate(today);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Failed to add todo');
     } finally {
@@ -95,6 +105,7 @@ export default function TodoScreen() {
   const startEdit = (todo: Todo) => {
     setEditingId(todo._id);
     setEditText(todo.name);
+    setEditDate(/^\d{4}-\d{2}-\d{2}/.test(todo.date) ? todo.date.slice(0, 10) : today);
     setActionError(null);
   };
 
@@ -112,7 +123,7 @@ export default function TodoScreen() {
     }
     const id = editingId;
     await runAction(id, async () => {
-      await updateTodo(id, { name });
+      await updateTodo(id, { name, date: editDate });
       setEditingId(null);
       setEditText('');
     });
@@ -125,44 +136,60 @@ export default function TodoScreen() {
 
     return (
       <View style={styles.row}>
-        {busy ? (
-          <ActivityIndicator size="small" color="#4f6df5" style={styles.spinner} />
-        ) : (
-          <Pressable
-            style={[styles.checkbox, done && styles.checkboxDone]}
-            onPress={() => handleToggle(item)}
-            disabled={editing}
-            accessibilityLabel={done ? 'Mark as pending' : 'Mark as done'}
-          >
-            {done ? <Text style={styles.checkmark}>✓</Text> : null}
-          </Pressable>
-        )}
-
         {editing ? (
-          <View style={styles.editRow}>
-            <TextInput
-              style={styles.editInput}
-              value={editText}
-              onChangeText={setEditText}
-              autoFocus
-              onSubmitEditing={() => void saveEdit()}
-              returnKeyType="done"
-            />
-            <Pressable
-              style={[styles.miniButton, styles.saveButton]}
-              onPress={() => void saveEdit()}
-            >
-              <Text style={styles.saveText}>Save</Text>
-            </Pressable>
-            <Pressable
-              style={[styles.miniButton, styles.cancelButton]}
-              onPress={cancelEdit}
-            >
-              <Text style={styles.cancelText}>Cancel</Text>
-            </Pressable>
+          <View style={styles.editContainer}>
+            <View style={styles.editRow}>
+              {busy ? (
+                <ActivityIndicator
+                  size="small"
+                  color="#4f6df5"
+                  style={styles.editSpinner}
+                />
+              ) : (
+                <Text style={styles.editLabel}>✎</Text>
+              )}
+              <TextInput
+                style={styles.editInput}
+                value={editText}
+                onChangeText={setEditText}
+                autoFocus
+                onSubmitEditing={() => void saveEdit()}
+                returnKeyType="done"
+              />
+            </View>
+            <View style={styles.editRow}>
+              <DateField value={editDate} onChange={setEditDate} />
+              <Pressable
+                style={[styles.miniButton, styles.saveButton]}
+                onPress={() => void saveEdit()}
+              >
+                <Text style={styles.saveText}>Save</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.miniButton, styles.cancelButton]}
+                onPress={cancelEdit}
+              >
+                <Text style={styles.cancelText}>Cancel</Text>
+              </Pressable>
+            </View>
           </View>
         ) : (
           <>
+            {busy ? (
+              <ActivityIndicator
+                size="small"
+                color="#4f6df5"
+                style={styles.spinner}
+              />
+            ) : (
+              <Pressable
+                style={[styles.checkbox, done && styles.checkboxDone]}
+                onPress={() => handleToggle(item)}
+                accessibilityLabel={done ? 'Mark as pending' : 'Mark as done'}
+              >
+                {done ? <Text style={styles.checkmark}>✓</Text> : null}
+              </Pressable>
+            )}
             <View style={styles.rowBody}>
               <Text style={[styles.rowTitle, done && styles.rowTitleDone]}>
                 {item.name}
@@ -204,17 +231,20 @@ export default function TodoScreen() {
           onSubmitEditing={() => void handleAdd()}
           returnKeyType="done"
         />
-        <Pressable
-          style={[styles.addButton, adding && styles.addButtonDisabled]}
-          onPress={() => void handleAdd()}
-          disabled={adding}
-        >
-          {adding ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.addButtonText}>Add</Text>
-          )}
-        </Pressable>
+        <View style={styles.addControls}>
+          <DateField value={newDate} onChange={setNewDate} />
+          <Pressable
+            style={[styles.addButton, adding && styles.addButtonDisabled]}
+            onPress={() => void handleAdd()}
+            disabled={adding}
+          >
+            {adding ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.addButtonText}>Add</Text>
+            )}
+          </Pressable>
+        </View>
       </View>
 
       {actionError ? (
@@ -285,12 +315,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f6fa',
   },
   inputCard: {
-    flexDirection: 'row',
     gap: 8,
     marginBottom: 12,
   },
   input: {
-    flex: 1,
     borderWidth: 1,
     borderColor: '#d9dce3',
     borderRadius: 10,
@@ -300,10 +328,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     color: '#1f2330',
   },
+  addControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   addButton: {
     backgroundColor: '#4f6df5',
     borderRadius: 10,
     paddingHorizontal: 18,
+    paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -387,8 +421,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
     backgroundColor: '#fff',
     borderRadius: 12,
     paddingHorizontal: 14,
@@ -398,8 +430,8 @@ const styles = StyleSheet.create({
     borderColor: '#e6e8ee',
   },
   spinner: {
-    width: 26,
-    height: 26,
+    width: 24,
+    height: 24,
     marginRight: 12,
   },
   checkbox: {
@@ -451,11 +483,23 @@ const styles = StyleSheet.create({
     color: '#d64545',
     fontSize: 14,
   },
+  editContainer: {
+    gap: 8,
+  },
   editRow: {
-    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+  },
+  editSpinner: {
+    width: 20,
+    height: 20,
+  },
+  editLabel: {
+    color: '#5a5f6e',
+    fontSize: 14,
+    width: 20,
+    textAlign: 'center',
   },
   editInput: {
     flex: 1,
