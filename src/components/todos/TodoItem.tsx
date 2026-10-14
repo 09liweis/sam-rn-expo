@@ -10,7 +10,7 @@ import {
 import DateField from '../DateField';
 import { cardShadow, theme } from '../../theme';
 import { Todo } from '../../types';
-import { formatDate, isDone } from './todoUtils';
+import { isDone } from './todoUtils';
 
 interface TodoItemProps {
   item: Todo;
@@ -99,7 +99,7 @@ export function TodoItem({
             </Text>
             <View style={styles.rowMeta}>
               <Text style={styles.rowDateIcon}>📅</Text>
-              <Text style={styles.rowDate}>{formatDate(item.date)}</Text>
+              <Text style={styles.rowDate}>{item.date}</Text>
             </View>
           </View>
           <Pressable
