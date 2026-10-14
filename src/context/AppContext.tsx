@@ -14,6 +14,7 @@ import {
   User,
   UserDetail,
   generateId,
+  TODO_TAB
 } from '../types';
 import {
   clearToken,
@@ -80,7 +81,7 @@ function buildUserFromDetail(
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<User | null>(null);
-  const [activeTab, setActiveTab] = useState<Tab>('todo');
+  const [activeTab, setActiveTab] = useState<Tab>(TODO_TAB);
   const [todos, setTodos] = useState<Todo[]>([]);
   const [todosLoading, setTodosLoading] = useState(false);
   const [todosError, setTodosError] = useState<string | null>(null);
@@ -130,7 +131,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       // with the credentials we have so they can retry fetching detail later.
       setUser(buildUserFromDetail({}, token, email));
     }
-    setActiveTab('todo');
+    setActiveTab(TODO_TAB);
   }, []);
 
   const logout = useCallback(() => {
@@ -141,7 +142,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setStatistics(null);
     setStatisticsError(null);
     setExpenses([]);
-    setActiveTab('todo');
+    setActiveTab(TODO_TAB);
   }, []);
 
   const fetchTodos = useCallback(async () => {
