@@ -98,7 +98,6 @@ export function TodoItem({
               {item.name}
             </Text>
             <View style={styles.rowMeta}>
-              <Text style={styles.rowDateIcon}>📅</Text>
               <Text style={styles.rowDate}>{item.date}</Text>
             </View>
           </View>
@@ -176,9 +175,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     marginTop: 3,
-  },
-  rowDateIcon: {
-    fontSize: 10,
   },
   rowDate: {
     fontSize: theme.font.micro,
