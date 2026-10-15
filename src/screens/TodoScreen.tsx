@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { useApp } from '../context/AppContext';
 import { toISODate } from '../components/DateField';
 import { TodoComposer } from '../components/todos/TodoComposer';
@@ -26,6 +35,7 @@ export default function TodoScreen() {
   const [newTitle, setNewTitle] = useState('');
   const [newDate, setNewDate] = useState(today);
   const [adding, setAdding] = useState(false);
+  const [addModalVisible, setAddModalVisible] = useState(false);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
@@ -61,11 +71,26 @@ export default function TodoScreen() {
       await addTodo(name, newDate);
       setNewTitle('');
       setNewDate(today);
+      setAddModalVisible(false);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Failed to add todo');
     } finally {
       setAdding(false);
     }
+  };
+
+  const closeAddModal = () => {
+    if (adding) return;
+    setAddModalVisible(false);
+    setNewTitle('');
+    setNewDate(today);
+    setActionError(null);
+  };
+
+  const openAddModal = () => {
+    setActionError(null);
+    setNewDate(today);
+    setAddModalVisible(true);
   };
 
   const handleToggle = (todo: Todo) => {
@@ -111,16 +136,56 @@ export default function TodoScreen() {
 
   return (
     <View style={styles.container}>
-      <TodoComposer
-        newTitle={newTitle}
-        setNewTitle={setNewTitle}
-        newDate={newDate}
-        setNewDate={setNewDate}
-        adding={adding}
-        onAdd={() => void handleAdd()}
-      />
+      <Modal
+        visible={addModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={closeAddModal}
+      >
+        <KeyboardAvoidingView
+          style={styles.modalBackdrop}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <Pressable
+            style={StyleSheet.absoluteFill}
+            onPress={closeAddModal}
+            accessibilityLabel="Close add todo dialog"
+            accessibilityRole="button"
+          />
+          <View style={[styles.modalCard, cardShadow.shadow]}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Add a todo</Text>
+              <Pressable
+                onPress={closeAddModal}
+                disabled={adding}
+                hitSlop={10}
+                accessibilityLabel="Close"
+                accessibilityRole="button"
+              >
+                <Text style={styles.modalClose}>✕</Text>
+              </Pressable>
+            </View>
+            <TodoComposer
+              newTitle={newTitle}
+              setNewTitle={setNewTitle}
+              newDate={newDate}
+              setNewDate={setNewDate}
+              adding={adding}
+              onAdd={() => void handleAdd()}
+            />
+            {actionError ? (
+              <View style={styles.actionErrorBox}>
+                <Text style={styles.actionErrorText}>{actionError}</Text>
+                <Pressable onPress={() => setActionError(null)} hitSlop={8}>
+                  <Text style={styles.dismissText}>✕</Text>
+                </Pressable>
+              </View>
+            ) : null}
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
 
-      {actionError ? (
+      {actionError && !addModalVisible ? (
         <View style={styles.actionErrorBox}>
           <Text style={styles.actionErrorText}>{actionError}</Text>
           <Pressable onPress={() => setActionError(null)} hitSlop={8}>
@@ -134,6 +199,7 @@ export default function TodoScreen() {
         total={todos.length}
         loading={todosLoading}
         onRefresh={() => void fetchTodos()}
+        onAdd={openAddModal}
       />
 
       {todosError ? (
@@ -190,6 +256,37 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: theme.bg,
+  },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+    backgroundColor: 'rgba(17, 24, 39, 0.45)',
+  },
+  modalCard: {
+    width: '100%',
+    maxWidth: 480,
+    alignSelf: 'center',
+    backgroundColor: theme.surface,
+    borderRadius: theme.radius.lg,
+    padding: 16,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  modalTitle: {
+    color: theme.ink,
+    fontSize: theme.font.title,
+    fontWeight: '800',
+  },
+  modalClose: {
+    color: theme.textFaint,
+    fontSize: theme.font.body,
+    fontWeight: '700',
+    padding: 4,
   },
   actionErrorBox: {
     flexDirection: 'row',

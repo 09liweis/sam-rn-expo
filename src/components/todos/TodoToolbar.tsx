@@ -7,6 +7,7 @@ interface TodoToolbarProps {
   total: number;
   loading: boolean;
   onRefresh: () => void;
+  onAdd: () => void;
 }
 
 export function TodoToolbar({
@@ -14,6 +15,7 @@ export function TodoToolbar({
   total,
   loading,
   onRefresh,
+  onAdd,
 }: TodoToolbarProps) {
   return (
     <View style={styles.toolbar}>
@@ -23,20 +25,34 @@ export function TodoToolbar({
           {total === 0 ? 'Nothing here yet' : `${remaining} of ${total} remaining`}
         </Text>
       </View>
-      <Pressable
-        style={({ pressed }) => [
-          styles.refreshButton,
-          (loading || pressed) && styles.refreshPressed,
-        ]}
-        onPress={onRefresh}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator size="small" color={theme.primary} />
-        ) : (
-          <Text style={styles.refreshText}>↻</Text>
-        )}
-      </Pressable>
+      <View style={styles.actions}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.addButton,
+            pressed && styles.buttonPressed,
+          ]}
+          onPress={onAdd}
+          accessibilityRole="button"
+        >
+          <Text style={styles.addText}>＋ Add Todo</Text>
+        </Pressable>
+        <Pressable
+          style={({ pressed }) => [
+            styles.refreshButton,
+            (loading || pressed) && styles.buttonPressed,
+          ]}
+          onPress={onRefresh}
+          disabled={loading}
+          accessibilityLabel="Refresh todos"
+          accessibilityRole="button"
+        >
+          {loading ? (
+            <ActivityIndicator size="small" color={theme.primary} />
+          ) : (
+            <Text style={styles.refreshText}>↻</Text>
+          )}
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -59,6 +75,27 @@ const styles = StyleSheet.create({
     fontSize: theme.font.caption,
     marginTop: 1,
   },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  addButton: {
+    minHeight: 38,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    backgroundColor: theme.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addText: {
+    color: '#fff',
+    fontSize: theme.font.caption,
+    fontWeight: '700',
+  },
+  buttonPressed: {
+    opacity: 0.7,
+  },
   refreshButton: {
     width: 38,
     height: 38,
@@ -66,9 +103,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  refreshPressed: {
-    opacity: 0.7,
   },
   refreshText: {
     color: theme.primary,
