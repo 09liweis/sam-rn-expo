@@ -7,9 +7,10 @@ import { theme } from './src/theme';
 import LoginScreen from './src/screens/LoginScreen';
 import TodoScreen from './src/screens/TodoScreen';
 import ExpenseScreen from './src/screens/ExpenseScreen';
+import {TODO_TAB} from './src/types';
 
 const TABS = [
-  { key: 'todo', label: '📋 Todos' },
+  { key: TODO_TAB, label: '📋 Todos' },
   { key: 'expense', label: '📊 Expenses' },
 ] as const;
 
