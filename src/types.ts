@@ -33,14 +33,8 @@ export interface StatisticsPlace {
   _id: string;
   name: string;
   address?: string;
-  icon?: string;
-  rating?: number;
-  place_id?: string;
   lat?: string | number;
   lng?: string | number;
-  types?: string[];
-  photos?: string[];
-  [key: string]: unknown;
 }
 
 export interface StatisticsItem {
