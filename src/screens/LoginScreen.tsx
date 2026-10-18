@@ -27,6 +27,10 @@ export default function LoginScreen() {
       setError('Please enter your email');
       return;
     }
+    if (password.trim().length === 0) {
+      setError('Please enter password');
+      return;      
+    }
     if (password.length < 4) {
       setError('Password must be at least 4 characters');
       return;
