@@ -10,8 +10,8 @@ import ExpenseScreen from './src/screens/ExpenseScreen';
 import {TODO_TAB,EXPENSE_TAB} from './src/types';
 
 const TABS = [
-  { key: TODO_TAB, label: '📋 Todos' },
-  { key: EXPENSE_TAB, label: '📊 Expenses' },
+  { key: TODO_TAB, label: 'Todos' },
+  { key: EXPENSE_TAB, label: 'Expenses' },
 ] as const;
 
 function greeting(): string {
