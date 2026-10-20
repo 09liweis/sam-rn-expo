@@ -7,11 +7,11 @@ import { theme } from './src/theme';
 import LoginScreen from './src/screens/LoginScreen';
 import TodoScreen from './src/screens/TodoScreen';
 import ExpenseScreen from './src/screens/ExpenseScreen';
-import {TODO_TAB} from './src/types';
+import {TODO_TAB,EXPENSE_TAB} from './src/types';
 
 const TABS = [
   { key: TODO_TAB, label: '📋 Todos' },
-  { key: 'expense', label: '📊 Expenses' },
+  { key: EXPENSE_TAB, label: '📊 Expenses' },
 ] as const;
 
 function greeting(): string {

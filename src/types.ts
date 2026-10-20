@@ -28,6 +28,7 @@ export interface Expense {
 export type Tab = 'todo' | 'expense';
 
 export const TODO_TAB:Tab = 'todo';
+export const EXPENSE_TAB:Tab = 'expense';
 
 export interface StatisticsPlace {
   _id: string;
