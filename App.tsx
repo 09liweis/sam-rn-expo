@@ -23,7 +23,7 @@ function greeting(): string {
 
 function Header() {
   const { user, logout } = useApp();
-  const name = user?.email.split('@')[0] ?? '';
+  const name = user?.nm;
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>

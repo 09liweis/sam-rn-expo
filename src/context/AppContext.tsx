@@ -74,6 +74,7 @@ function buildUserFromDetail(
   return {
     email,
     token,
+    nm: detail.nm,
     loginAt: Date.now(),
   };
 }
