@@ -186,10 +186,10 @@ const styles = StyleSheet.create({
   },
   iconText: {
     color: theme.textFaint,
-    fontSize: theme.font.body,
+    fontSize: theme.font.title,
   },
   iconDelete: {
-    fontSize: theme.font.caption,
+    fontSize: theme.font.title,
   },
   editContainer: {
     flex: 1,
