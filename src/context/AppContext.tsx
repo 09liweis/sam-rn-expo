@@ -57,7 +57,6 @@ interface AppContextValue {
   fetchStatistics: () => Promise<void>;
   // expenses (local)
   expenses: Expense[];
-  addExpense: (title: string, amount: number) => void;
   removeExpense: (id: string) => void;
   totalExpense: number;
 }
@@ -234,13 +233,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [user?.token, logout]);
 
-  const addExpense = useCallback((title: string, amount: number) => {
-    setExpenses((prev) => [
-      { id: generateId(), title, amount, createdAt: Date.now() },
-      ...prev,
-    ]);
-  }, []);
-
   const removeExpense = useCallback((id: string) => {
     setExpenses((prev) => prev.filter((e) => e.id !== id));
   }, []);
@@ -270,7 +262,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       statisticsError,
       fetchStatistics,
       expenses,
-      addExpense,
       removeExpense,
       totalExpense,
     }),
@@ -292,7 +283,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       statisticsError,
       fetchStatistics,
       expenses,
-      addExpense,
       removeExpense,
       totalExpense,
     ],
