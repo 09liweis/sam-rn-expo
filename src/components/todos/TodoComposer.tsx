@@ -38,23 +38,21 @@ export function TodoComposer({
         onSubmitEditing={onAdd}
         returnKeyType="done"
       />
-      <View style={styles.addControls}>
-        <DateField value={newDate} onChange={setNewDate} />
-        <Pressable
-          style={({ pressed }) => [
-            styles.addButton,
-            (adding || pressed) && styles.addButtonPressed,
-          ]}
-          onPress={onAdd}
-          disabled={adding}
-        >
-          {adding ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.addButtonText}>＋ Add</Text>
-          )}
-        </Pressable>
-      </View>
+      <DateField value={newDate} onChange={setNewDate} />
+      <Pressable
+        style={({ pressed }) => [
+          styles.addButton,
+          (adding || pressed) && styles.addButtonPressed,
+        ]}
+        onPress={onAdd}
+        disabled={adding}
+      >
+        {adding ? (
+          <ActivityIndicator size="small" color="#fff" />
+        ) : (
+          <Text style={styles.addButtonText}>＋ Add</Text>
+        )}
+      </Pressable>
     </View>
   );
 }
@@ -76,11 +74,6 @@ const styles = StyleSheet.create({
     fontSize: theme.font.body,
     backgroundColor: theme.bg,
     color: theme.ink,
-  },
-  addControls: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   addButton: {
     backgroundColor: theme.primary,
