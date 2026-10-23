@@ -139,12 +139,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 14,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.35)',
+    borderColor: 'rgba(255, 255, 255, 0.55)',
   },
   logoText: {
     color: '#fff',
-    fontSize: 30,
-    fontWeight: '800',
+    fontSize: 50,
+    fontWeight: '500',
   },
   heroTitle: {
     color: '#fff',
