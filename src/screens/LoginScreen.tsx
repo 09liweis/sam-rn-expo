@@ -67,7 +67,6 @@ export default function LoginScreen() {
 
       <View style={[styles.card, styles.cardShadow]}>
         <Text style={styles.cardTitle}>Welcome back</Text>
-        <Text style={styles.cardSubtitle}>Sign in to continue</Text>
 
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -176,13 +175,6 @@ const styles = StyleSheet.create({
     fontSize: theme.font.title,
     fontWeight: '800',
     textAlign: 'center',
-  },
-  cardSubtitle: {
-    color: theme.textFaint,
-    fontSize: theme.font.caption,
-    textAlign: 'center',
-    marginBottom: 22,
-    marginTop: 4,
   },
   label: {
     color: theme.textSoft,
