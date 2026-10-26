@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
     fontSize: theme.font.title,
     fontWeight: '800',
     textAlign: 'center',
+    marginBottom: 20
   },
   label: {
     color: theme.textSoft,
